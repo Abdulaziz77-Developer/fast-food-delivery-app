@@ -115,7 +115,7 @@ fun WavesOfFoodScreen(){
     }
 }
 @Composable
-@Preview(showBackground = true)
+//@Preview(showBackground = true)
 fun Homescreen()
 {
     Column(
