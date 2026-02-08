@@ -54,7 +54,8 @@ class MainActivity : ComponentActivity() {
 fun MainScreen() {
     var spleshScreen by remember { mutableStateOf(true) }
 
-    var currentScreen by remember { mutableStateOf(0) }
+    // Переменная для управления экранами: "home", "login", "signup"
+    var currentScreen by remember { mutableStateOf("home") }
 
     LaunchedEffect(Unit) {
         delay(2000)
@@ -64,10 +65,20 @@ fun MainScreen() {
     if (spleshScreen) {
         WavesOfFoodScreen()
     } else {
-        // Логика переключения между экранами
+        // Логика навигации
         when (currentScreen) {
-            0 -> Homescreen(onNextClick = { currentScreen = 1 }) // Передаем клик
-            1 -> NextScreen() // Ваш экран логина (убедитесь, что он импортирован)
+            "home" -> {
+                Homescreen(onNextClick = { currentScreen = "login" })
+            }
+            "login" -> {
+                // ПЕРЕДАЕМ ЛОГИКУ: когда в NextScreen нажмут на текст,
+                // меняем состояние на "signup"
+                NextScreen(onSignUpClick = { currentScreen = "signup" })
+            }
+            "signup" -> {
+                // Экран регистрации (передай ему возврат на логин)
+                SignUpScreen(onAlreadyHaveAccountClick = { currentScreen = "login" })
+            }
         }
     }
 }

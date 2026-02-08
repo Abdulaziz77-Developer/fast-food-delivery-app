@@ -53,8 +53,8 @@ import com.example.app.ui.theme.testColor
 import kotlinx.coroutines.delay
 
 @Composable
-@Preview(showBackground = true)
-fun NextScreen() {
+
+fun NextScreen(onSignUpClick:() -> Unit={}) {
     // Состояния для хранения текста, который вводит пользователь
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -162,7 +162,9 @@ fun NextScreen() {
                 color = startRed,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.clickable { /* Навигация на Sign Up */ }
+                modifier = Modifier.clickable {
+                    onSignUpClick()
+                }
             )
         }
 
@@ -237,24 +239,6 @@ fun DeleveryFavoriteFoodText(){
         color = startRed,
     )
 }
-
-@Composable
-fun NameInput(){
-    var text by remember { mutableStateOf("") }
-    OutlinedTextField(
-        value = text,
-        onValueChange = { newText -> text = newText},
-        placeholder = { Text(text = "Enter your login")},
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(15.dp),
-        colors = TextFieldDefaults.colors(
-            focusedTextColor = cornerColor,
-            unfocusedTextColor = cornerColor,
-            focusedContainerColor = Color.Transparent,
-            unfocusedContainerColor = Color.Transparent,
-        )
-    )
-}
 @Composable
 fun CustomInputField(
     value: String,
@@ -288,24 +272,6 @@ fun CustomInputField(
         )
     }
 }
-@Composable
-fun PasswordInput(){
-    var text by remember { mutableStateOf("") }
-    OutlinedTextField(
-        value = text,
-        onValueChange = { newText -> text = newText},
-        placeholder = { Text(text = "Enter your login")},
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(15.dp),
-        colors = TextFieldDefaults.colors(
-            focusedTextColor = cornerColor,
-            unfocusedTextColor = cornerColor,
-            focusedContainerColor = Color.Transparent,
-            unfocusedContainerColor = Color.Transparent,
-        )
-    )
-}
-
 @Composable
 fun FooterText(){
     Text(
