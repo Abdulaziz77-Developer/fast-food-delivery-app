@@ -51,18 +51,24 @@ class MainActivity : ComponentActivity() {
     }
 }
 @Composable
-fun MainScreen(){
-    var spleshScreen by remember {
-        mutableStateOf(true)
-    }
+fun MainScreen() {
+    var spleshScreen by remember { mutableStateOf(true) }
+
+    var currentScreen by remember { mutableStateOf(0) }
+
     LaunchedEffect(Unit) {
         delay(2000)
         spleshScreen = false
     }
-    if (spleshScreen){
+
+    if (spleshScreen) {
         WavesOfFoodScreen()
-    }else{
-        Homescreen()
+    } else {
+        // Логика переключения между экранами
+        when (currentScreen) {
+            0 -> Homescreen(onNextClick = { currentScreen = 1 }) // Передаем клик
+            1 -> NextScreen() // Ваш экран логина (убедитесь, что он импортирован)
+        }
     }
 }
 
@@ -105,33 +111,30 @@ fun WavesOfFoodScreen(){
             modifier = Modifier
                 .height(300.dp)
         )
-        Text(
-            text = "Design By" +
-                    "NeatRoots",
-            color = startRed,
-            fontFamily = YongFontFamily,
-            fontSize = 18.sp
-        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 50.dp),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            FooterText()
+        }
     }
 }
 @Composable
-//@Preview(showBackground = true)
-fun Homescreen()
-{
+fun Homescreen(onNextClick: () -> Unit) { // Добавили аргумент для обработки нажатия
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .padding(horizontal = 24 .dp),
+            .padding(horizontal = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
-    )
-    {
+    ) {
         Spacer(modifier = Modifier.height(90.dp))
         Image(
             painter = painterResource(id = R.drawable.backkgroundstart1),
             contentDescription = "Wafes of food illustration",
-            modifier = Modifier
-                .size(333.dp)
+            modifier = Modifier.size(333.dp)
         )
         Text(
             modifier = Modifier.padding(top = 20.dp),
@@ -142,19 +145,22 @@ fun Homescreen()
             color = startRed,
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(270.dp))
-        GradientButton("Next") {
 
+        // Используем weight(1f), чтобы прижать кнопку к низу автоматически
+        Spacer(modifier = Modifier.height(260.dp))
+
+        GradientButton("Next") {
+            onNextClick() // Вызываем функцию перехода
         }
-       Text(
-           text = "Design By" +
-                   "NeatRoots",
-           color = startRed,
-           fontFamily = YongFontFamily,
-           fontSize = 18.sp,
-           modifier = Modifier.padding(top = 16.dp),
-           fontWeight = FontWeight.Bold
-       )
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 50.dp),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            FooterText()
+        }
     }
 }
 
