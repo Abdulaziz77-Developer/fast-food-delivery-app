@@ -25,7 +25,7 @@ import com.example.app.ui.theme.YongFontFamily
 import com.example.app.ui.theme.startRed
 
 @Composable
-@Preview(showBackground = true)
+
 fun SignUpScreen(
     onAlreadyHaveAccountClick: () -> Unit = {},
     onSignUpSuccess: () -> Unit = {} // Добавили параметр успеха для перехода на LocationScreen

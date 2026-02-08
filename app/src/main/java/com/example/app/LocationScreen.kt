@@ -33,22 +33,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.app.FooterText
 import com.example.app.R
+import com.example.app.ui.theme.AppTheme
 import com.example.app.ui.theme.YongFontFamily
 import com.example.app.ui.theme.startRed
 
 @Composable
-@Preview(showBackground = true)
-fun LocationScreen() {
-    // Список городов для выбора
+fun LocationScreen(onCitySelected: () -> Unit) { // Добавили параметр для перехода
     val cities = listOf("Jaipur", "Moscow", "Dushanbe", "New York")
     var expanded by remember { mutableStateOf(false) }
     var selectedCity by remember { mutableStateOf(cities[0]) }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .padding(24.dp)
+        modifier = Modifier.fillMaxSize().background(Color.White).padding(24.dp)
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -56,7 +52,6 @@ fun LocationScreen() {
         ) {
             Spacer(modifier = Modifier.height(60.dp))
 
-            // Заголовок (используем стиль как на макете)
             Text(
                 text = "Choose Your Location",
                 fontFamily = YongFontFamily,
@@ -67,34 +62,30 @@ fun LocationScreen() {
 
             Spacer(modifier = Modifier.height(30.dp))
 
-            // Поле выбора города
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(60.dp)
-                    .shadow(8.dp, RoundedCornerShape(15.dp))
-                    .clickable { expanded = !expanded },
-                shape = RoundedCornerShape(15.dp),
-                color = Color.White
-            ) {
-                Row(
+            Box { // Обернули в Box для корректного DropdownMenu
+                Surface(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                        .fillMaxWidth()
+                        .height(60.dp)
+                        .shadow(8.dp, RoundedCornerShape(15.dp))
+                        .clickable { expanded = !expanded },
+                    shape = RoundedCornerShape(15.dp),
+                    color = Color.White
                 ) {
-                    Text(text = selectedCity, color = Color.Black, fontSize = 16.sp)
-
-                    // Иконка стрелочки вниз
-                    Image(
-                        painter = painterResource(id = R.drawable.download), // Замените на вашу иконку
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(text = selectedCity, color = Color.Black, fontSize = 16.sp)
+                        Image(
+                            painter = painterResource(id = R.drawable.download),
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
                 }
 
-                // Само выпадающее меню
                 DropdownMenu(
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
@@ -106,6 +97,7 @@ fun LocationScreen() {
                             onClick = {
                                 selectedCity = city
                                 expanded = false
+                                onCitySelected() // АВТОМАТИЧЕСКИЙ ПЕРЕХОД ПОСЛЕ КЛИКА
                             }
                         )
                     }
@@ -114,9 +106,11 @@ fun LocationScreen() {
 
             Spacer(modifier = Modifier.height(100.dp))
 
-            // Описание (текст из макета)
             Text(
-                text = "To provide you with the best dining experience, we need your permission to access your device's location. By enabling location services, we can offer personalized restaurant recommendations, accurate delivery estimates, and ensure a seamless food delivery experience.\"",
+                text = "TTo provide you with the best dining " +
+                        "experience, we need your permission to access" +
+                        " your device's location. By enabling location services," +
+                        " we can offer personalized restaurant recommendations, accurate delivery estimates, and ensure a seamless food delivery experience.\"",
                 fontSize = 14.sp,
                 color = Color.Black,
                 textAlign = TextAlign.Start,
@@ -124,12 +118,20 @@ fun LocationScreen() {
             )
         }
 
-        // Футер
         Box(
             modifier = Modifier.fillMaxSize().padding(bottom = 20.dp),
             contentAlignment = Alignment.BottomCenter
         ) {
             FooterText()
         }
+    }
+}
+
+// Исправленный Preview (теперь не будет ошибки Render Issue)
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun LocationScreenPreview() {
+    AppTheme {
+        LocationScreen(onCitySelected = {})
     }
 }

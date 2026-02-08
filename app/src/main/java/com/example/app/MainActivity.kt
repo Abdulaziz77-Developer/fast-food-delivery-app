@@ -55,37 +55,39 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen() {
     var spleshScreen by remember { mutableStateOf(true) }
-
-    // Переменная для управления экранами: "home", "login", "signup", "location"
+    // Добавляем "food_explorer" в список возможных экранов
     var currentScreen by remember { mutableStateOf("home") }
 
     LaunchedEffect(Unit) {
-        delay(2000) // Задержка Splash Screen
+        delay(2000)
         spleshScreen = false
     }
 
     if (spleshScreen) {
         WavesOfFoodScreen()
     } else {
-        // Логика навигации
         when (currentScreen) {
             "home" -> {
                 Homescreen(onNextClick = { currentScreen = "login" })
             }
             "login" -> {
-                // Переход на регистрацию
                 NextScreen(onSignUpClick = { currentScreen = "signup" })
             }
             "signup" -> {
-                // Добавили onSignUpSuccess для перехода на выбор города
                 SignUpScreen(
                     onAlreadyHaveAccountClick = { currentScreen = "login" },
                     onSignUpSuccess = { currentScreen = "location" }
                 )
             }
             "location" -> {
-                // Экран выбора локации
-                LocationScreen()
+                // Передаем логику: при выборе города идем на FoodExplorer
+                LocationScreen(onCitySelected = {
+                    currentScreen = "food_explorer"
+                })
+            }
+            "food_explorer" -> {
+                // Твой готовый экран с товарами
+                FoodExplorerScreen()
             }
         }
     }
