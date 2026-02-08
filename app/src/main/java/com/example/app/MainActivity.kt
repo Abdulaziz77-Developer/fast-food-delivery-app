@@ -1,5 +1,6 @@
 package com.example.app
 
+import LocationScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -50,15 +51,16 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 @Composable
 fun MainScreen() {
     var spleshScreen by remember { mutableStateOf(true) }
 
-    // Переменная для управления экранами: "home", "login", "signup"
+    // Переменная для управления экранами: "home", "login", "signup", "location"
     var currentScreen by remember { mutableStateOf("home") }
 
     LaunchedEffect(Unit) {
-        delay(2000)
+        delay(2000) // Задержка Splash Screen
         spleshScreen = false
     }
 
@@ -71,13 +73,19 @@ fun MainScreen() {
                 Homescreen(onNextClick = { currentScreen = "login" })
             }
             "login" -> {
-                // ПЕРЕДАЕМ ЛОГИКУ: когда в NextScreen нажмут на текст,
-                // меняем состояние на "signup"
+                // Переход на регистрацию
                 NextScreen(onSignUpClick = { currentScreen = "signup" })
             }
             "signup" -> {
-                // Экран регистрации (передай ему возврат на логин)
-                SignUpScreen(onAlreadyHaveAccountClick = { currentScreen = "login" })
+                // Добавили onSignUpSuccess для перехода на выбор города
+                SignUpScreen(
+                    onAlreadyHaveAccountClick = { currentScreen = "login" },
+                    onSignUpSuccess = { currentScreen = "location" }
+                )
+            }
+            "location" -> {
+                // Экран выбора локации
+                LocationScreen()
             }
         }
     }
