@@ -72,11 +72,14 @@ fun MainScreen() {
     } else {
         when (currentScreen) {
             "home" -> Homescreen(onNextClick = { currentScreen = "login" })
+
             "login" -> NextScreen(onSignUpClick = { currentScreen = "signup" })
+
             "signup" -> SignUpScreen(
                 onAlreadyHaveAccountClick = { currentScreen = "login" },
                 onSignUpSuccess = { currentScreen = "location" }
             )
+
             "location" -> LocationScreen(onCitySelected = { currentScreen = "food_explorer" })
 
             "food_explorer" -> {
@@ -84,7 +87,7 @@ fun MainScreen() {
                     onHomeClick = { currentScreen = "restaurant_details" },
                     onPopularClick = { currentScreen = "search_foods" },
                     onFoodClick = { food ->
-                        selectedFood = food // Запоминаем еду
+                        selectedFood = food // Запоминаем еду с её описанием
                         currentScreen = "food_details" // Переходим в детали
                     }
                 )
@@ -99,15 +102,17 @@ fun MainScreen() {
                 }
             }
 
-            "search_foods" -> SearchFoodsScreen()
-            "restaurant_details" -> RestaurantDetailsScreen(onBackClick = { currentScreen = "food_explorer" })
-            "food_details" -> {
-                selectedFood?.let { food ->
-                    FoodDetailsScreen(
-                        food = food, // Передаем объект с его описанием
-                        onBackClick = { currentScreen = "food_explorer" }
-                    )
-                }
+            "search_foods" -> {
+                // ИСПРАВЛЕНО: Теперь передаем навигацию назад в FoodExplorer
+                SearchFoodsScreen(
+                    onHomeClick = { currentScreen = "food_explorer" }
+                )
+            }
+
+            "restaurant_details" -> {
+                RestaurantDetailsScreen(
+                    onBackClick = { currentScreen = "food_explorer" }
+                )
             }
         }
     }

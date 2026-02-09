@@ -1,4 +1,5 @@
 package com.example.app
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,7 +25,6 @@ import com.example.app.ui.theme.AppTheme
 import com.example.app.ui.theme.YongFontFamily
 import com.example.app.ui.theme.startRed
 
-// Исправлено: Уникальное имя модели, чтобы не было ошибок дублирования
 data class SearchFoodItem(
     val name: String,
     val restaurant: String,
@@ -33,26 +33,29 @@ data class SearchFoodItem(
 )
 
 @Composable
-fun SearchFoodsScreen() {
+fun SearchFoodsScreen(onHomeClick: () -> Unit) { // Добавлен параметр для навигации
     var currentScreen by remember { mutableStateOf("search_list") }
 
     if (currentScreen == "search_list") {
-        SearchListContent(onFoodClick = { currentScreen = "restaurant_details" })
+        SearchListContent(
+            onFoodClick = { currentScreen = "restaurant_details" },
+            onHomeClick = onHomeClick // Передаем функцию дальше
+        )
     } else {
         RestaurantDetailsContent(onBackClick = { currentScreen = "search_list" })
     }
 }
 
 @Composable
-fun SearchListContent(onFoodClick: () -> Unit) {
+fun SearchListContent(onFoodClick: () -> Unit, onHomeClick: () -> Unit) {
     Scaffold(
-        bottomBar = { CustomBottomNavigation(onHomeClick = onFoodClick) }
+        bottomBar = { CustomBottomNavigation(onHomeClick = onHomeClick) } // Передаем в навигацию
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.White)
-                .padding(innerPadding) // Используем PaddingValues от Scaffold
+                .padding(innerPadding)
         ) {
             Spacer(modifier = Modifier.height(20.dp))
 
@@ -88,7 +91,6 @@ fun SearchListContent(onFoodClick: () -> Unit) {
 
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
-                // ИСПРАВЛЕНО: `PaddingValues` теперь использует правильные параметры
                 contentPadding = PaddingValues(start = 24.dp, end = 24.dp, bottom = 20.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
@@ -223,6 +225,7 @@ fun CustomBottomNavigation(onHomeClick: () -> Unit) {
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Клик по иконке Home теперь вызывает переход
             Icon(
                 painterResource(id = R.drawable.home),
                 null,
@@ -239,7 +242,6 @@ fun CustomBottomNavigation(onHomeClick: () -> Unit) {
                 onClick = {},
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE8F5E9)),
                 shape = RoundedCornerShape(12.dp),
-                // ИСПРАВЛЕНО: Добавлены .dp
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -261,17 +263,10 @@ fun getPopularSearchData() = listOf(
     SearchFoodItem("Green Noddle", "Noodle Home", 15, R.drawable.menupicture)
 )
 
-// Это дополнительное превью. Если основное не работает, проверь это.
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun DiagnosticPreview() {
-    // Используем стандартную MaterialTheme вместо AppTheme для проверки
-    MaterialTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = Color.White
-        ) {
-            SearchFoodsScreen()
-        }
+    AppTheme {
+        SearchFoodsScreen(onHomeClick = {})
     }
 }
