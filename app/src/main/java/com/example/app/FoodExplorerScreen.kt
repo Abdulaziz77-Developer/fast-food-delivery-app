@@ -2,6 +2,7 @@ package com.example.app
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -19,23 +20,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-// Замени AppTheme на название темы из твоего файла ui.theme/Theme.kt
+// Убедись, что названия темы и цветов совпадают с твоими в ui.theme
 import com.example.app.ui.theme.AppTheme
 import com.example.app.ui.theme.YongFontFamily
 import com.example.app.ui.theme.startRed
 
 @Composable
-fun FoodExplorerScreen() {
+fun FoodExplorerScreen(onHomeClick: () -> Unit) { // Добавлен аргумент для перехода
     Scaffold(
-        bottomBar = { CustomBottomMenu() },
+        bottomBar = { CustomBottomMenu(onHomeClick = onHomeClick) },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { /* Open Menu */ },
+                onClick = { /* Действие для меню */ },
                 containerColor = Color(0xFF9CCC65),
                 shape = RoundedCornerShape(15.dp),
                 modifier = Modifier.padding(bottom = 10.dp)
             ) {
-                // Используй иконку меню
                 Icon(
                     painter = painterResource(id = R.drawable.menuphoto),
                     contentDescription = null,
@@ -51,7 +51,7 @@ fun FoodExplorerScreen() {
                 .background(Color(0xFFFBFBFB))
                 .padding(padding)
         ) {
-            // 1. Заголовок и колокольчик
+            // 1. Заголовок и уведомления
             item {
                 Row(
                     modifier = Modifier
@@ -77,7 +77,7 @@ fun FoodExplorerScreen() {
                 }
             }
 
-            // 2. Строка поиска
+            // 2. Поиск
             item {
                 OutlinedTextField(
                     value = "",
@@ -103,7 +103,7 @@ fun FoodExplorerScreen() {
                 )
             }
 
-            // 3. Карусель баннеров
+            // 3. Баннеры
             item {
                 LazyRow(
                     contentPadding = PaddingValues(horizontal = 24.dp, vertical = 20.dp),
@@ -123,7 +123,7 @@ fun FoodExplorerScreen() {
                 }
             }
 
-            // 4. Заголовок "Popular"
+            // 4. Популярное
             item {
                 Row(
                     modifier = Modifier
@@ -137,7 +137,7 @@ fun FoodExplorerScreen() {
                 }
             }
 
-            // 5. Список карточек
+            // 5. Список еды
             items(getPopularFoodData()) { food ->
                 FoodItemCard(food)
             }
@@ -182,7 +182,7 @@ fun FoodItemCard(food: FoodItemData) {
 }
 
 @Composable
-fun CustomBottomMenu() {
+fun CustomBottomMenu(onHomeClick: () -> Unit) { // Принимает функцию для клика
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -196,17 +196,18 @@ fun CustomBottomMenu() {
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Home
+            // Кнопка HOME теперь с кликом
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .background(Color(0xFFE8F5E9), RoundedCornerShape(12.dp))
+                    .clickable { onHomeClick() } // Переход при нажатии
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 Icon(painterResource(id = R.drawable.home), null, tint = Color(0xFF2E7D32))
                 Text("Home", color = Color(0xFF2E7D32), fontSize = 12.sp)
             }
-            // Остальные иконки из макета
+
             Icon(painterResource(id = R.drawable.shoppingcart), null, modifier = Modifier.size(28.dp))
             Icon(painterResource(id = R.drawable.caricon), null, modifier = Modifier.size(28.dp))
             Icon(painterResource(id = R.drawable.barmenu), null, modifier = Modifier.size(28.dp))
@@ -215,7 +216,6 @@ fun CustomBottomMenu() {
     }
 }
 
-// Данные
 data class FoodItemData(val name: String, val restaurant: String, val price: Int, val imageRes: Int)
 
 fun getPopularFoodData() = listOf(
@@ -224,12 +224,10 @@ fun getPopularFoodData() = listOf(
     FoodItemData("Green Noodle", "Noodle Home", 15, R.drawable.menuphoto)
 )
 
-// ИСПРАВЛЕННОЕ ПРЕВЬЮ
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun FoodExplorerScreenPreview() {
-    // ЗАМЕНИ AppTheme на свою тему, иначе будет Render Issue!
     AppTheme {
-        FoodExplorerScreen()
+        FoodExplorerScreen(onHomeClick = {})
     }
 }

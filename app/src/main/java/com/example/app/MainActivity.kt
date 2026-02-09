@@ -1,6 +1,7 @@
 package com.example.app
 
 import LocationScreen
+import RestaurantDetailsScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -52,20 +53,24 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+
 @Composable
 fun MainScreen() {
     var spleshScreen by remember { mutableStateOf(true) }
-    // Добавляем "food_explorer" в список возможных экранов
+
+    // Переменная для управления экранами.
+    // Добавляем "restaurant_details" в логику
     var currentScreen by remember { mutableStateOf("home") }
 
     LaunchedEffect(Unit) {
-        delay(2000)
+        delay(2000) // Задержка Splash Screen
         spleshScreen = false
     }
 
     if (spleshScreen) {
         WavesOfFoodScreen()
     } else {
+        // Логика навигации
         when (currentScreen) {
             "home" -> {
                 Homescreen(onNextClick = { currentScreen = "login" })
@@ -80,14 +85,22 @@ fun MainScreen() {
                 )
             }
             "location" -> {
-                // Передаем логику: при выборе города идем на FoodExplorer
+                // После выбора города идем в Explorer
                 LocationScreen(onCitySelected = {
                     currentScreen = "food_explorer"
                 })
             }
             "food_explorer" -> {
-                // Твой готовый экран с товарами
-                FoodExplorerScreen()
+                // ПЕРЕДАЕМ КЛИК: при нажатии на Home переходим в детали ресторана
+                FoodExplorerScreen(onHomeClick = {
+                    currentScreen = "restaurant_details"
+                })
+            }
+            "restaurant_details" -> {
+                // Экран деталей ресторана с кнопкой "Назад"
+                RestaurantDetailsScreen(onBackClick = {
+                    currentScreen = "food_explorer"
+                })
             }
         }
     }
