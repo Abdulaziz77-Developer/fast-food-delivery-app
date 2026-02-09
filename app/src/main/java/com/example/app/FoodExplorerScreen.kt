@@ -20,30 +20,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-// Убедись, что названия темы и цветов совпадают с твоими в ui.theme
 import com.example.app.ui.theme.AppTheme
 import com.example.app.ui.theme.YongFontFamily
 import com.example.app.ui.theme.startRed
 
 @Composable
-fun FoodExplorerScreen(onHomeClick: () -> Unit) { // Добавлен аргумент для перехода
+fun FoodExplorerScreen(
+    onHomeClick: () -> Unit,
+    onPopularClick: () -> Unit,
+    onFoodClick: (FoodItemData) -> Unit // ПАРАМЕТР ДЛЯ ПЕРЕДАЧИ ДАННЫХ
+) {
     Scaffold(
         bottomBar = { CustomBottomMenu(onHomeClick = onHomeClick) },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { /* Действие для меню */ },
+                onClick = { /* Меню */ },
                 containerColor = Color(0xFF9CCC65),
                 shape = RoundedCornerShape(15.dp),
                 modifier = Modifier.padding(bottom = 10.dp)
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.menuphoto),
-                    contentDescription = null,
-                    tint = Color.White
-                )
+                Icon(painterResource(id = R.drawable.menuphoto), null, tint = Color.White)
             }
-        },
-        floatingActionButtonPosition = FabPosition.End
+        }
     ) { padding ->
         LazyColumn(
             modifier = Modifier
@@ -51,84 +49,15 @@ fun FoodExplorerScreen(onHomeClick: () -> Unit) { // Добавлен аргум
                 .background(Color(0xFFFBFBFB))
                 .padding(padding)
         ) {
-            // 1. Заголовок и уведомления
+            item { HeaderSection() }
+            item { SearchSection() }
+            item { BannerSection() }
             item {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 24.dp, vertical = 20.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Explore Your Favorite Food",
-                        fontSize = 28.sp,
-                        fontWeight = FontWeight.Bold,
-                        fontFamily = YongFontFamily,
-                        color = startRed,
-                        modifier = Modifier.width(220.dp)
-                    )
-                    Icon(
-                        painter = painterResource(id = R.drawable.notification_bell),
-                        contentDescription = null,
-                        tint = Color(0xFF66BB6A),
-                        modifier = Modifier.size(32.dp)
-                    )
-                }
-            }
-
-            // 2. Поиск
-            item {
-                OutlinedTextField(
-                    value = "",
-                    onValueChange = {},
-                    placeholder = { Text("What do you want to order?", color = Color(0xFFD3A0A0)) },
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.search),
-                            contentDescription = null,
-                            tint = startRed
-                        )
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 24.dp),
-                    shape = RoundedCornerShape(15.dp),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color(0xFFFDECEC),
-                        unfocusedContainerColor = Color(0xFFFDECEC),
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent
-                    )
-                )
-            }
-
-            // 3. Баннеры
-            item {
-                LazyRow(
-                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 20.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    items(listOf(R.drawable.banner1, R.drawable.banner1)) { bannerId ->
-                        Image(
-                            painter = painterResource(id = bannerId),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .width(325.dp)
-                                .height(160.dp)
-                                .clip(RoundedCornerShape(20.dp)),
-                            contentScale = ContentScale.FillBounds
-                        )
-                    }
-                }
-            }
-
-            // 4. Популярное
-            item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 24.dp, vertical = 8.dp),
+                        .padding(horizontal = 24.dp, vertical = 8.dp)
+                        .clickable { onPopularClick() },
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -136,11 +65,99 @@ fun FoodExplorerScreen(onHomeClick: () -> Unit) { // Добавлен аргум
                     Text(text = "View More", fontSize = 12.sp, color = startRed)
                 }
             }
-
-            // 5. Список еды
             items(getPopularFoodData()) { food ->
-                FoodItemCard(food)
+                // Передаем клик по карточке
+                FoodItemCard(food = food, onClick = { onFoodClick(food) })
             }
+        }
+    }
+}
+
+@Composable
+fun FoodItemCard(food: FoodItemData, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp, vertical = 8.dp)
+            .clickable { onClick() }, // Клик по всей карточке
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(2.dp)
+    ) {
+        Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+            Image(
+                painter = painterResource(id = food.imageRes),
+                contentDescription = null,
+                modifier = Modifier.size(64.dp).clip(RoundedCornerShape(12.dp)),
+                contentScale = ContentScale.Crop
+            )
+            Column(modifier = Modifier.padding(start = 16.dp).weight(1f)) {
+                Text(text = food.name, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(text = food.restaurant, color = Color.Gray, fontSize = 12.sp)
+            }
+            Text(text = "$${food.price}", color = startRed, fontWeight = FontWeight.ExtraBold, fontSize = 22.sp)
+        }
+    }
+}
+
+// Вспомогательные функции для чистоты кода
+@Composable
+fun HeaderSection() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp, vertical = 20.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "Explore Your Favorite Food",
+            fontSize = 28.sp,
+            fontWeight = FontWeight.Bold,
+            fontFamily = YongFontFamily,
+            color = startRed,
+            modifier = Modifier.width(220.dp)
+        )
+        Icon(
+            painterResource(id = R.drawable.notification_bell),
+            null,
+            tint = Color(0xFF66BB6A),
+            modifier = Modifier.size(32.dp)
+        )
+    }
+}
+
+@Composable
+fun SearchSection() {
+    OutlinedTextField(
+        value = "",
+        onValueChange = {},
+        placeholder = { Text("What do you want to order?", color = Color(0xFFD3A0A0)) },
+        leadingIcon = { Icon(painterResource(id = R.drawable.search), null, tint = startRed) },
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
+        shape = RoundedCornerShape(15.dp),
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color(0xFFFDECEC),
+            unfocusedContainerColor = Color(0xFFFDECEC),
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent
+        )
+    )
+}
+
+@Composable
+fun BannerSection() {
+    LazyRow(
+        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 20.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        items(listOf(R.drawable.banner1, R.drawable.banner1)) { bannerId ->
+            Image(
+                painter = painterResource(id = bannerId),
+                contentDescription = null,
+                modifier = Modifier.width(325.dp).height(160.dp).clip(RoundedCornerShape(20.dp)),
+                contentScale = ContentScale.FillBounds
+            )
         }
     }
 }
@@ -148,66 +165,46 @@ fun FoodExplorerScreen(onHomeClick: () -> Unit) { // Добавлен аргум
 @Composable
 fun FoodItemCard(food: FoodItemData) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 8.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 8.dp),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
-        Row(
-            modifier = Modifier.padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
             Image(
                 painter = painterResource(id = food.imageRes),
                 contentDescription = null,
-                modifier = Modifier
-                    .size(64.dp)
-                    .clip(RoundedCornerShape(12.dp)),
+                modifier = Modifier.size(64.dp).clip(RoundedCornerShape(12.dp)),
                 contentScale = ContentScale.Crop
             )
             Column(modifier = Modifier.padding(start = 16.dp).weight(1f)) {
                 Text(text = food.name, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 Text(text = food.restaurant, color = Color.Gray, fontSize = 12.sp)
             }
-            Text(
-                text = "$${food.price}",
-                color = startRed,
-                fontWeight = FontWeight.ExtraBold,
-                fontSize = 22.sp
-            )
+            Text(text = "$${food.price}", color = startRed, fontWeight = FontWeight.ExtraBold, fontSize = 22.sp)
         }
     }
 }
 
 @Composable
-fun CustomBottomMenu(onHomeClick: () -> Unit) { // Принимает функцию для клика
+fun CustomBottomMenu(onHomeClick: () -> Unit) {
     Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(80.dp)
-            .clip(RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp)),
-        color = Color.White,
-        shadowElevation = 10.dp
+        modifier = Modifier.fillMaxWidth().height(80.dp).clip(RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp)),
+        color = Color.White, shadowElevation = 10.dp
     ) {
         Row(
             modifier = Modifier.fillMaxSize(),
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Кнопка HOME теперь с кликом
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .background(Color(0xFFE8F5E9), RoundedCornerShape(12.dp))
-                    .clickable { onHomeClick() } // Переход при нажатии
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                modifier = Modifier.background(Color(0xFFE8F5E9), RoundedCornerShape(12.dp))
+                    .clickable { onHomeClick() }.padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 Icon(painterResource(id = R.drawable.home), null, tint = Color(0xFF2E7D32))
                 Text("Home", color = Color(0xFF2E7D32), fontSize = 12.sp)
             }
-
             Icon(painterResource(id = R.drawable.shoppingcart), null, modifier = Modifier.size(28.dp))
             Icon(painterResource(id = R.drawable.caricon), null, modifier = Modifier.size(28.dp))
             Icon(painterResource(id = R.drawable.barmenu), null, modifier = Modifier.size(28.dp))
@@ -216,18 +213,36 @@ fun CustomBottomMenu(onHomeClick: () -> Unit) { // Принимает функц
     }
 }
 
-data class FoodItemData(val name: String, val restaurant: String, val price: Int, val imageRes: Int)
-
-fun getPopularFoodData() = listOf(
-    FoodItemData("Herbal Pancake", "Warung Herbal", 7, R.drawable.menuphoto),
-    FoodItemData("Fruit Salad", "Wijie Resto", 5, R.drawable.menuphoto),
-    FoodItemData("Green Noodle", "Noodle Home", 15, R.drawable.menuphoto)
+data class FoodItemData(
+    val name: String,
+    val restaurant: String,
+    val price: Int,
+    val imageRes: Int,
+    val description: String // <--- Теперь описание привязано к объекту
 )
 
+fun getPopularFoodData() = listOf(
+    FoodItemData(
+        "Herbal Pancake", "Warung Herbal", 7, R.drawable.menuphoto,
+        "Delicious and crispy herbal pancakes made with fresh mint and honey. A perfect healthy start to your day."
+    ),
+    FoodItemData(
+        "Fruit Salad", "Wijie Resto", 5, R.drawable.itemfood1,
+        "A refreshing mix of tropical fruits including watermelon, pineapple, and mango with zesty lime."
+    ),
+    FoodItemData(
+        "Green Noodle", "Noodle Home", 15, R.drawable.itemfood2,
+        "Handmade spinach noodles served with roasted garlic and organic chicken. Rich in vitamins."
+    )
+)
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun FoodExplorerScreenPreview() {
     AppTheme {
-        FoodExplorerScreen(onHomeClick = {})
+        FoodExplorerScreen(
+            onHomeClick = {},
+            onPopularClick = {},
+            onFoodClick = {} // Добавили пустую функцию для клика по еде
+        )
     }
 }

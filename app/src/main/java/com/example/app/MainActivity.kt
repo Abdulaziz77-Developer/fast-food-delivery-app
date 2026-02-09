@@ -57,50 +57,57 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen() {
     var spleshScreen by remember { mutableStateOf(true) }
-
-    // Переменная для управления экранами.
-    // Добавляем "restaurant_details" в логику
     var currentScreen by remember { mutableStateOf("home") }
 
+    // Хранилище для выбранной еды
+    var selectedFood by remember { mutableStateOf<FoodItemData?>(null) }
+
     LaunchedEffect(Unit) {
-        delay(2000) // Задержка Splash Screen
+        delay(2000)
         spleshScreen = false
     }
 
     if (spleshScreen) {
         WavesOfFoodScreen()
     } else {
-        // Логика навигации
         when (currentScreen) {
-            "home" -> {
-                Homescreen(onNextClick = { currentScreen = "login" })
-            }
-            "login" -> {
-                NextScreen(onSignUpClick = { currentScreen = "signup" })
-            }
-            "signup" -> {
-                SignUpScreen(
-                    onAlreadyHaveAccountClick = { currentScreen = "login" },
-                    onSignUpSuccess = { currentScreen = "location" }
+            "home" -> Homescreen(onNextClick = { currentScreen = "login" })
+            "login" -> NextScreen(onSignUpClick = { currentScreen = "signup" })
+            "signup" -> SignUpScreen(
+                onAlreadyHaveAccountClick = { currentScreen = "login" },
+                onSignUpSuccess = { currentScreen = "location" }
+            )
+            "location" -> LocationScreen(onCitySelected = { currentScreen = "food_explorer" })
+
+            "food_explorer" -> {
+                FoodExplorerScreen(
+                    onHomeClick = { currentScreen = "restaurant_details" },
+                    onPopularClick = { currentScreen = "search_foods" },
+                    onFoodClick = { food ->
+                        selectedFood = food // Запоминаем еду
+                        currentScreen = "food_details" // Переходим в детали
+                    }
                 )
             }
-            "location" -> {
-                // После выбора города идем в Explorer
-                LocationScreen(onCitySelected = {
-                    currentScreen = "food_explorer"
-                })
+
+            "food_details" -> {
+                selectedFood?.let { food ->
+                    FoodDetailsScreen(
+                        food = food,
+                        onBackClick = { currentScreen = "food_explorer" }
+                    )
+                }
             }
-            "food_explorer" -> {
-                // ПЕРЕДАЕМ КЛИК: при нажатии на Home переходим в детали ресторана
-                FoodExplorerScreen(onHomeClick = {
-                    currentScreen = "restaurant_details"
-                })
-            }
-            "restaurant_details" -> {
-                // Экран деталей ресторана с кнопкой "Назад"
-                RestaurantDetailsScreen(onBackClick = {
-                    currentScreen = "food_explorer"
-                })
+
+            "search_foods" -> SearchFoodsScreen()
+            "restaurant_details" -> RestaurantDetailsScreen(onBackClick = { currentScreen = "food_explorer" })
+            "food_details" -> {
+                selectedFood?.let { food ->
+                    FoodDetailsScreen(
+                        food = food, // Передаем объект с его описанием
+                        onBackClick = { currentScreen = "food_explorer" }
+                    )
+                }
             }
         }
     }
