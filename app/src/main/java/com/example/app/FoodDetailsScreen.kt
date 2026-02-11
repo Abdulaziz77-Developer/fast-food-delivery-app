@@ -2,7 +2,6 @@ package com.example.app
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -24,7 +23,8 @@ import com.example.app.ui.theme.startRed
 @Composable
 fun FoodDetailsScreen(
     food: FoodItemData,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onAddToCartClick: () -> Unit // Функция перехода в корзину
 ) {
     Column(
         modifier = Modifier
@@ -34,7 +34,7 @@ fun FoodDetailsScreen(
     ) {
         Spacer(modifier = Modifier.height(40.dp))
 
-        // Верхняя панель: Кнопка назад и Имя блюда
+        // Верхняя панель
         Box(modifier = Modifier.fillMaxWidth()) {
             IconButton(
                 onClick = onBackClick,
@@ -42,7 +42,7 @@ fun FoodDetailsScreen(
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.feedback),
-                    null,
+                    contentDescription = "Back",
                     tint = Color(0xFFFFB74D)
                 )
             }
@@ -58,7 +58,7 @@ fun FoodDetailsScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Изображение блюда
+        // Картинка
         Image(
             painter = painterResource(id = food.imageRes),
             contentDescription = null,
@@ -71,7 +71,6 @@ fun FoodDetailsScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Описание
         Text(text = "Short description", fontSize = 18.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(8.dp))
         Text(
@@ -83,7 +82,6 @@ fun FoodDetailsScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Ингредиенты
         Text(text = "Ingredients", fontSize = 18.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(8.dp))
         Text(
@@ -95,25 +93,17 @@ fun FoodDetailsScreen(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        // КНОПКА КАК НА КАРТИНКЕ (Add To Chart)
+        // КНОПКА Add To Cart
         Button(
-            onClick = { /* Добавить в корзину */ },
+            onClick = { onAddToCartClick() }, // ВЫЗОВ ПЕРЕХОДА
             modifier = Modifier
                 .fillMaxWidth()
-                .height(56.dp) // Стандартная высота кнопки как на макете
-                .padding(bottom = 0.dp),
+                .height(56.dp),
             shape = RoundedCornerShape(15.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFDA332E) // Насыщенный красный с картинки
-            ),
-            elevation = ButtonDefaults.buttonElevation(defaultElevation = 8.dp) // Тень под кнопкой
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDA332E)),
+            elevation = ButtonDefaults.buttonElevation(defaultElevation = 8.dp)
         ) {
-            Text(
-                text = "Add To Chart",
-                color = Color.White,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
-            )
+            Text(text = "Add To Cart", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -128,13 +118,14 @@ fun FoodDetailsPreview() {
             name = "Herbal Pancake",
             restaurant = "Warung Herbal",
             price = 7,
-            imageRes = R.drawable.menupicture,
+            imageRes = R.drawable.menuphoto,
             description = "Delicious and crispy herbal pancakes made with fresh mint and honey. A perfect healthy start to your day."
         )
 
         FoodDetailsScreen(
             food = mockFood,
-            onBackClick = {}
+            onBackClick = {},
+            onAddToCartClick = {} // Пустая функция для превью
         )
     }
 }

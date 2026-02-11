@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,7 +31,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.app.ui.theme.AppTheme
@@ -87,9 +85,10 @@ fun MainScreen() {
                     onHomeClick = { currentScreen = "restaurant_details" },
                     onPopularClick = { currentScreen = "search_foods" },
                     onFoodClick = { food ->
-                        selectedFood = food // Запоминаем еду с её описанием
-                        currentScreen = "food_details" // Переходим в детали
-                    }
+                        selectedFood = food
+                        currentScreen = "food_details"
+                    },
+                    onCartClick = { currentScreen = "cart" }
                 )
             }
 
@@ -97,21 +96,38 @@ fun MainScreen() {
                 selectedFood?.let { food ->
                     FoodDetailsScreen(
                         food = food,
-                        onBackClick = { currentScreen = "food_explorer" }
+                        onBackClick = { currentScreen = "food_explorer" },
+                        onAddToCartClick = { currentScreen = "cart" }
                     )
                 }
             }
 
             "search_foods" -> {
-                // ИСПРАВЛЕНО: Теперь передаем навигацию назад в FoodExplorer
-                SearchFoodsScreen(
-                    onHomeClick = { currentScreen = "food_explorer" }
-                )
+                SearchFoodsScreen(onHomeClick = { currentScreen = "food_explorer" })
             }
 
             "restaurant_details" -> {
-                RestaurantDetailsScreen(
-                    onBackClick = { currentScreen = "food_explorer" }
+                RestaurantDetailsScreen(onBackClick = { currentScreen = "food_explorer" })
+            }
+
+            "cart" -> {
+                CartScreen(
+                    onBackClick = { currentScreen = "food_explorer" },
+                    onHomeClick = { currentScreen = "food_explorer" },
+                    // ТЕПЕРЬ ЭТО РАБОТАЕТ:
+                    onProceedClick = { currentScreen = "edit_order" }
+                )
+            }
+
+            // НОВЫЙ ЭКРАН: Редактирование и подтверждение заказа
+            "edit_order" -> {
+                EditOrderScreen(
+                    onBackClick = { currentScreen = "cart" },
+                    onPlaceOrderClick = {
+                        // Здесь можно добавить экран "Успех" или вернуть на главную
+                        currentScreen = "food_explorer"
+                        println("Order placed successfully!")
+                    }
                 )
             }
         }
