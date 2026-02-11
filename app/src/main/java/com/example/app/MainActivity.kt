@@ -110,38 +110,38 @@ fun MainScreen() {
                 RestaurantDetailsScreen(onBackClick = { currentScreen = "food_explorer" })
             }
 
-<<<<<<< HEAD
             "cart" -> {
                 CartScreen(
                     onBackClick = { currentScreen = "food_explorer" },
                     onHomeClick = { currentScreen = "food_explorer" },
-                    // ТЕПЕРЬ ЭТО РАБОТАЕТ:
                     onProceedClick = { currentScreen = "edit_order" }
                 )
             }
 
-            // НОВЫЙ ЭКРАН: Редактирование и подтверждение заказа
+            // ИСПРАВЛЕННЫЙ БЛОК: Edit Order
             "edit_order" -> {
                 EditOrderScreen(
                     onBackClick = { currentScreen = "cart" },
                     onPlaceOrderClick = {
-                        // Здесь можно добавить экран "Успех" или вернуть на главную
-                        currentScreen = "food_explorer"
-                        println("Order placed successfully!")
+                        // FUTURE: Here you will add your Node.js API call (e.g., repository.placeOrder())
+                        // Once the API returns success, we switch to congrats
+                        currentScreen = "congrats"
+                        println("Order placed successfully! Ready for Node.js API integration.")
                     }
                 )
-=======
-            // --- ДОБАВЬ ЭТОТ БЛОК ---
-            "cart" -> {
-                CartScreen(onBackClick = { currentScreen = "food_explorer" },
-                    onHomeClick = { currentScreen = "food_explorer" })
->>>>>>> origin/main
+            }
+
+            // НОВЫЙ БЛОК: Congrats Screen
+            "congrats" -> {
+                CongratsScreen(
+                    onGoHomeClick = {
+                        currentScreen = "food_explorer"
+                    }
+                )
             }
         }
     }
 }
-
-
 @Composable
 fun WavesOfFoodScreen(){
     Column(

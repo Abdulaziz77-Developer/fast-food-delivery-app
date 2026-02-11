@@ -3,7 +3,6 @@ package com.example.app
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -18,7 +17,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.app.R
 import com.example.app.ui.theme.AppTheme
 import com.example.app.ui.theme.YongFontFamily
 import com.example.app.ui.theme.startRed
@@ -26,9 +24,9 @@ import com.example.app.ui.theme.startRed
 @Composable
 fun EditOrderScreen(
     onBackClick: () -> Unit,
-    onPlaceOrderClick: () -> Unit
+    onPlaceOrderClick: () -> Unit // This is the navigation trigger
 ) {
-    // Используем rememberSaveable, чтобы данные не пропадали при повороте экрана
+    // State for the input fields
     var name by remember { mutableStateOf("lorem ipsum") }
     var address by remember { mutableStateOf("Lorem ipsum is placeholder text commonly used...") }
     var phone by remember { mutableStateOf("123456789") }
@@ -41,7 +39,7 @@ fun EditOrderScreen(
     ) {
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Кнопка назад
+        // Back Button
         IconButton(
             onClick = onBackClick,
             modifier = Modifier.size(32.dp)
@@ -65,15 +63,20 @@ fun EditOrderScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Поля ввода
+        // Input Fields
         EditInputField(label = "Name", value = name, onValueChange = { name = it })
         EditInputField(label = "Address", value = address, onValueChange = { address = it }, isSingleLine = false)
         EditInputField(label = "Phone", value = phone, onValueChange = { phone = it })
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Способ оплаты
-        Text(text = "Payment Method", color = Color.Gray, fontSize = 14.sp, modifier = Modifier.padding(start = 8.dp, bottom = 8.dp))
+        // Payment Method Section
+        Text(
+            text = "Payment Method",
+            color = Color.Gray,
+            fontSize = 14.sp,
+            modifier = Modifier.padding(start = 8.dp, bottom = 8.dp)
+        )
 
         Card(
             modifier = Modifier.fillMaxWidth().height(80.dp),
@@ -97,9 +100,9 @@ fun EditOrderScreen(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        // Кнопка подтверждения
+        // Place My Order Button
         Button(
-            onClick = onPlaceOrderClick,
+            onClick = onPlaceOrderClick, // Now triggers navigation to CongratsScreen
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp)
@@ -108,7 +111,12 @@ fun EditOrderScreen(
             colors = ButtonDefaults.buttonColors(containerColor = Color.White),
             elevation = ButtonDefaults.buttonElevation(defaultElevation = 6.dp)
         ) {
-            Text(text = "Place My Order", color = startRed, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            Text(
+                text = "Place My Order",
+                color = startRed,
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp
+            )
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -166,6 +174,7 @@ fun EditInputField(
         }
     }
 }
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun EditOrderPreview() {
