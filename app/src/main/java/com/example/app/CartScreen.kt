@@ -39,9 +39,9 @@ data class CartItem(
 fun CartScreen(
     onBackClick: () -> Unit,
     onHomeClick: () -> Unit,
-    onProceedClick: () -> Unit
+    onProceedClick: () -> Unit,
+    onHistoryClick: () -> Unit // ДОБАВЛЕНО: Новый параметр
 ) {
-    // ИСПРАВЛЕНО: Ставим количество 0, чтобы красное окно было скрыто при запуске
     val cartItems = remember {
         mutableStateListOf(
             CartItem(1, "Spacy fresh crab", "Waroenk kita", 35, R.drawable.menuphoto, 0),
@@ -50,7 +50,6 @@ fun CartScreen(
         )
     }
 
-    // Расчеты
     val subTotal = cartItems.sumOf { it.price * it.quantity }
     val totalQuantity = cartItems.sumOf { it.quantity }
     val deliveryCharge = if (totalQuantity > 0) 10 else 0
@@ -61,7 +60,8 @@ fun CartScreen(
         bottomBar = {
             CartBottomNavigationBar(
                 onHomeClick = onHomeClick,
-                onCartClick = { /* Мы уже здесь */ }
+                onCartClick = { /* Мы уже здесь */ },
+                onHistoryClick = onHistoryClick // ПЕРЕДАЕМ В МЕНЮ
             )
         }
     ) { innerPadding ->
@@ -126,7 +126,6 @@ fun CartScreen(
                     fontWeight = FontWeight.Bold
                 )
 
-                // Список товаров
                 LazyColumn(
                     modifier = Modifier.weight(1f),
                     contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp),
@@ -143,7 +142,6 @@ fun CartScreen(
                 }
             }
 
-            // ПАНЕЛЬ С СУММОЙ: Появится только если нажать на плюс
             Box(modifier = Modifier.align(Alignment.BottomCenter)) {
                 AnimatedVisibility(
                     visible = totalQuantity > 0,
@@ -155,7 +153,7 @@ fun CartScreen(
                         delivery = deliveryCharge,
                         discount = discount,
                         total = finalTotal,
-                        onProceedClick = onProceedClick // ПЕРЕХОД РАБОТАЕТ
+                        onProceedClick = onProceedClick
                     )
                 }
             }
@@ -273,7 +271,11 @@ fun SummaryLine(label: String, value: String) {
 }
 
 @Composable
-fun CartBottomNavigationBar(onHomeClick: () -> Unit, onCartClick: () -> Unit) {
+fun CartBottomNavigationBar(
+    onHomeClick: () -> Unit,
+    onCartClick: () -> Unit,
+    onHistoryClick: () -> Unit // ДОБАВЛЕНО
+) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -304,29 +306,28 @@ fun CartBottomNavigationBar(onHomeClick: () -> Unit, onCartClick: () -> Unit) {
                 Icon(painterResource(id = R.drawable.shoppingcart), null, tint = Color(0xFF2E7D32))
             }
             Icon(painterResource(id = R.drawable.caricon), null, modifier = Modifier.size(24.dp))
-            Icon(painterResource(id = R.drawable.barmenu), null, modifier = Modifier.size(24.dp))
+
+            // ИСПРАВЛЕНО: Теперь barmenu ведет в историю
+            Icon(
+                painter = painterResource(id = R.drawable.barmenu),
+                null,
+                modifier = Modifier.size(24.dp).clickable { onHistoryClick() }
+            )
+
             Icon(painterResource(id = R.drawable.user1), null, modifier = Modifier.size(24.dp))
         }
     }
 }
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun CartPreview() {
     AppTheme {
-        // Создаем тестовое состояние специально для превью
-        val previewItems = remember {
-            mutableStateListOf(
-                CartItem(1, "Spacy fresh crab", "Waroenk kita", 35, R.drawable.menuphoto, 1),
-                CartItem(2, "Spacy fresh crab", "Waroenk kita", 35, R.drawable.menuphoto, 0),
-                CartItem(3, "Spacy fresh crab", "Waroenk kita", 35, R.drawable.menuphoto, 0)
-            )
-        }
-
-        // Вызываем экран с пустыми обработчиками
         CartScreen(
             onBackClick = {},
             onHomeClick = {},
-            onProceedClick = {}
+            onProceedClick = {},
+            onHistoryClick = {} // Пусто для превью
         )
     }
 }

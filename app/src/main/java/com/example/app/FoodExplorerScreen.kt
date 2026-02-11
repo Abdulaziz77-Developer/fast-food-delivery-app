@@ -29,14 +29,15 @@ fun FoodExplorerScreen(
     onHomeClick: () -> Unit,
     onPopularClick: () -> Unit,
     onFoodClick: (FoodItemData) -> Unit,
-    onCartClick: () -> Unit // Параметр для перехода в корзину
+    onCartClick: () -> Unit,
+    onHistoryClick: () -> Unit // Добавлено: параметр для перехода в историю
 ) {
     Scaffold(
         bottomBar = {
-            // ИСПРАВЛЕНО: Передаем onCartClick в меню
             CustomBottomMenu(
                 onHomeClick = onHomeClick,
-                onCartClick = onCartClick
+                onCartClick = onCartClick,
+                onHistoryClick = onHistoryClick // Передаем в меню
             )
         },
         floatingActionButton = {
@@ -165,9 +166,12 @@ fun BannerSection() {
     }
 }
 
-// ИСПРАВЛЕНО: Добавлен onCartClick в параметры CustomBottomMenu
 @Composable
-fun CustomBottomMenu(onHomeClick: () -> Unit, onCartClick: () -> Unit) {
+fun CustomBottomMenu(
+    onHomeClick: () -> Unit,
+    onCartClick: () -> Unit,
+    onHistoryClick: () -> Unit // Добавлено: обработчик истории
+) {
     Surface(
         modifier = Modifier.fillMaxWidth().height(80.dp).clip(RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp)),
         color = Color.White, shadowElevation = 10.dp
@@ -188,7 +192,6 @@ fun CustomBottomMenu(onHomeClick: () -> Unit, onCartClick: () -> Unit) {
                 Text("Home", color = Color(0xFF2E7D32), fontSize = 12.sp)
             }
 
-            // ИСПРАВЛЕНО: Добавлен clickable для перехода в корзину
             Icon(
                 painter = painterResource(id = R.drawable.shoppingcart),
                 contentDescription = "Cart",
@@ -198,7 +201,16 @@ fun CustomBottomMenu(onHomeClick: () -> Unit, onCartClick: () -> Unit) {
             )
 
             Icon(painterResource(id = R.drawable.caricon), null, modifier = Modifier.size(28.dp))
-            Icon(painterResource(id = R.drawable.barmenu), null, modifier = Modifier.size(28.dp))
+
+            // ИСПРАВЛЕНО: Добавлен clickable для перехода на HistoryScreen
+            Icon(
+                painter = painterResource(id = R.drawable.barmenu),
+                contentDescription = "History",
+                modifier = Modifier
+                    .size(28.dp)
+                    .clickable { onHistoryClick() }
+            )
+
             Icon(painterResource(id = R.drawable.user1), null, modifier = Modifier.size(28.dp))
         }
     }
@@ -227,7 +239,8 @@ fun FoodExplorerScreenPreview() {
             onHomeClick = {},
             onPopularClick = {},
             onFoodClick = { food -> },
-            onCartClick = {}
+            onCartClick = {},
+            onHistoryClick = {} // Добавлено для превью
         )
     }
 }

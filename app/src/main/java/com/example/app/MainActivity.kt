@@ -82,13 +82,14 @@ fun MainScreen() {
 
             "food_explorer" -> {
                 FoodExplorerScreen(
-                    onHomeClick = { currentScreen = "restaurant_details" },
+                    onHomeClick = { currentScreen = "food_explorer" },
                     onPopularClick = { currentScreen = "search_foods" },
                     onFoodClick = { food ->
                         selectedFood = food
                         currentScreen = "food_details"
                     },
-                    onCartClick = { currentScreen = "cart" }
+                    onCartClick = { currentScreen = "cart" },
+                    onHistoryClick = { currentScreen = "history" } // РАБОТАЕТ
                 )
             }
 
@@ -103,7 +104,10 @@ fun MainScreen() {
             }
 
             "search_foods" -> {
-                SearchFoodsScreen(onHomeClick = { currentScreen = "food_explorer" })
+                SearchFoodsScreen(
+                    onHomeClick = { currentScreen = "food_explorer" },
+                    onHistoryClick = { currentScreen = "history" } // РАБОТАЕТ
+                )
             }
 
             "restaurant_details" -> {
@@ -114,30 +118,33 @@ fun MainScreen() {
                 CartScreen(
                     onBackClick = { currentScreen = "food_explorer" },
                     onHomeClick = { currentScreen = "food_explorer" },
-                    onProceedClick = { currentScreen = "edit_order" }
+                    onProceedClick = { currentScreen = "edit_order" },
+                    onHistoryClick = { currentScreen = "history" } // РАБОТАЕТ
                 )
             }
 
-            // ИСПРАВЛЕННЫЙ БЛОК: Edit Order
             "edit_order" -> {
                 EditOrderScreen(
                     onBackClick = { currentScreen = "cart" },
                     onPlaceOrderClick = {
-                        // FUTURE: Here you will add your Node.js API call (e.g., repository.placeOrder())
-                        // Once the API returns success, we switch to congrats
                         currentScreen = "congrats"
-                        println("Order placed successfully! Ready for Node.js API integration.")
                     }
                 )
             }
 
-            // НОВЫЙ БЛОК: Congrats Screen
             "congrats" -> {
                 CongratsScreen(
                     onGoHomeClick = {
                         currentScreen = "food_explorer"
                     }
                 )
+            }
+
+            // НОВЫЙ БЛОК: Страница истории заказов
+            "history" -> {
+                HistoryScreen()
+                // Если в HistoryScreen ты тоже добавишь BottomBar,
+                // передай туда onHomeClick = { currentScreen = "food_explorer" }
             }
         }
     }

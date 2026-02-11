@@ -33,13 +33,17 @@ data class SearchFoodItem(
 )
 
 @Composable
-fun SearchFoodsScreen(onHomeClick: () -> Unit) { // Добавлен параметр для навигации
+fun SearchFoodsScreen(
+    onHomeClick: () -> Unit,
+    onHistoryClick: () -> Unit // ДОБАВЛЕНО: Параметр для навигации в историю
+) {
     var currentScreen by remember { mutableStateOf("search_list") }
 
     if (currentScreen == "search_list") {
         SearchListContent(
             onFoodClick = { currentScreen = "restaurant_details" },
-            onHomeClick = onHomeClick // Передаем функцию дальше
+            onHomeClick = onHomeClick,
+            onHistoryClick = onHistoryClick // Передаем дальше
         )
     } else {
         RestaurantDetailsContent(onBackClick = { currentScreen = "search_list" })
@@ -47,9 +51,18 @@ fun SearchFoodsScreen(onHomeClick: () -> Unit) { // Добавлен парам�
 }
 
 @Composable
-fun SearchListContent(onFoodClick: () -> Unit, onHomeClick: () -> Unit) {
+fun SearchListContent(
+    onFoodClick: () -> Unit,
+    onHomeClick: () -> Unit,
+    onHistoryClick: () -> Unit // Добавлено
+) {
     Scaffold(
-        bottomBar = { CustomBottomNavigation(onHomeClick = onHomeClick) } // Передаем в навигацию
+        bottomBar = {
+            CustomBottomNavigation(
+                onHomeClick = onHomeClick,
+                onHistoryClick = onHistoryClick // Передаем в навигацию
+            )
+        }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -101,6 +114,8 @@ fun SearchListContent(onFoodClick: () -> Unit, onHomeClick: () -> Unit) {
         }
     }
 }
+
+// Функции FoodCard и RestaurantDetailsContent остаются без изменений...
 
 @Composable
 fun FoodCard(food: SearchFoodItem, onClick: () -> Unit) {
@@ -211,7 +226,10 @@ fun RestaurantDetailsContent(onBackClick: () -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CustomBottomNavigation(onHomeClick: () -> Unit) {
+fun CustomBottomNavigation(
+    onHomeClick: () -> Unit,
+    onHistoryClick: () -> Unit // ДОБАВЛЕНО
+) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -225,7 +243,6 @@ fun CustomBottomNavigation(onHomeClick: () -> Unit) {
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Клик по иконке Home теперь вызывает переход
             Icon(
                 painterResource(id = R.drawable.home),
                 null,
@@ -251,7 +268,15 @@ fun CustomBottomNavigation(onHomeClick: () -> Unit) {
                 }
             }
 
-            Icon(painterResource(id = R.drawable.barmenu), null, modifier = Modifier.size(28.dp))
+            // ИСПРАВЛЕНО: Теперь иконка barmenu кликабельна
+            Icon(
+                painterResource(id = R.drawable.barmenu),
+                null,
+                modifier = Modifier
+                    .size(28.dp)
+                    .clickable { onHistoryClick() }
+            )
+
             Icon(painterResource(id = R.drawable.user1), null, modifier = Modifier.size(28.dp))
         }
     }
@@ -267,6 +292,6 @@ fun getPopularSearchData() = listOf(
 @Composable
 fun DiagnosticPreview() {
     AppTheme {
-        SearchFoodsScreen(onHomeClick = {})
+        SearchFoodsScreen(onHomeClick = {}, onHistoryClick = {})
     }
 }
