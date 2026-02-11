@@ -35,7 +35,9 @@ data class SearchFoodItem(
 @Composable
 fun SearchFoodsScreen(
     onHomeClick: () -> Unit,
-    onHistoryClick: () -> Unit // ДОБАВЛЕНО: Параметр для навигации в историю
+    onHistoryClick: () -> Unit, // ДОБАВЛЕНО
+    onCartClick: () -> Unit,    // ДОБАВЛЕНО
+    onProfileClick: () -> Unit  // ДОБАВЛЕНО
 ) {
     var currentScreen by remember { mutableStateOf("search_list") }
 
@@ -43,7 +45,9 @@ fun SearchFoodsScreen(
         SearchListContent(
             onFoodClick = { currentScreen = "restaurant_details" },
             onHomeClick = onHomeClick,
-            onHistoryClick = onHistoryClick // Передаем дальше
+            onHistoryClick = onHistoryClick, // Передаем дальше
+            onCartClick = onCartClick,       // Передаем дальше
+            onProfileClick = onProfileClick  // Передаем дальше
         )
     } else {
         RestaurantDetailsContent(onBackClick = { currentScreen = "search_list" })
@@ -54,13 +58,17 @@ fun SearchFoodsScreen(
 fun SearchListContent(
     onFoodClick: () -> Unit,
     onHomeClick: () -> Unit,
-    onHistoryClick: () -> Unit // Добавлено
+    onHistoryClick: () -> Unit,
+    onCartClick: () -> Unit,
+    onProfileClick: () -> Unit
 ) {
     Scaffold(
         bottomBar = {
             CustomBottomNavigation(
                 onHomeClick = onHomeClick,
-                onHistoryClick = onHistoryClick // Передаем в навигацию
+                onHistoryClick = onHistoryClick,
+                onCartClick = onCartClick,
+                onProfileClick = onProfileClick
             )
         }
     ) { innerPadding ->
@@ -115,8 +123,7 @@ fun SearchListContent(
     }
 }
 
-// Функции FoodCard и RestaurantDetailsContent остаются без изменений...
-
+// FoodCard и RestaurantDetailsContent оставляем без изменений...
 @Composable
 fun FoodCard(food: SearchFoodItem, onClick: () -> Unit) {
     Card(
@@ -228,7 +235,9 @@ fun RestaurantDetailsContent(onBackClick: () -> Unit) {
 @Composable
 fun CustomBottomNavigation(
     onHomeClick: () -> Unit,
-    onHistoryClick: () -> Unit // ДОБАВЛЕНО
+    onHistoryClick: () -> Unit,
+    onCartClick: () -> Unit,
+    onProfileClick: () -> Unit
 ) {
     Surface(
         modifier = Modifier
@@ -246,15 +255,18 @@ fun CustomBottomNavigation(
             Icon(
                 painterResource(id = R.drawable.home),
                 null,
-                modifier = Modifier
-                    .size(28.dp)
-                    .clickable { onHomeClick() }
+                modifier = Modifier.size(28.dp).clickable { onHomeClick() }
             )
 
             BadgedBox(badge = { Badge { Text("7") } }) {
-                Icon(painterResource(id = R.drawable.shoppingcart), null, modifier = Modifier.size(28.dp))
+                Icon(
+                    painterResource(id = R.drawable.shoppingcart),
+                    null,
+                    modifier = Modifier.size(28.dp).clickable { onCartClick() }
+                )
             }
 
+            // Кнопка Search (активная)
             Button(
                 onClick = {},
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE8F5E9)),
@@ -268,16 +280,16 @@ fun CustomBottomNavigation(
                 }
             }
 
-            // ИСПРАВЛЕНО: Теперь иконка barmenu кликабельна
             Icon(
                 painterResource(id = R.drawable.barmenu),
                 null,
-                modifier = Modifier
-                    .size(28.dp)
-                    .clickable { onHistoryClick() }
+                modifier = Modifier.size(28.dp).clickable { onHistoryClick() }
             )
-
-            Icon(painterResource(id = R.drawable.user1), null, modifier = Modifier.size(28.dp))
+            Icon(
+                painterResource(id = R.drawable.user1),
+                null,
+                modifier = Modifier.size(28.dp).clickable { onProfileClick() }
+            )
         }
     }
 }
@@ -292,6 +304,6 @@ fun getPopularSearchData() = listOf(
 @Composable
 fun DiagnosticPreview() {
     AppTheme {
-        SearchFoodsScreen(onHomeClick = {}, onHistoryClick = {})
+        SearchFoodsScreen({}, {}, {}, {})
     }
 }

@@ -22,7 +22,7 @@ import com.example.app.ui.theme.AppTheme
 import com.example.app.ui.theme.YongFontFamily
 import com.example.app.ui.theme.startRed
 
-// Модель данных
+// Модель данных (без изменений)
 data class HistoryItem(
     val name: String,
     val restaurant: String,
@@ -31,8 +31,12 @@ data class HistoryItem(
 )
 
 @Composable
-fun HistoryScreen() {
-    // Тестовый список данных
+fun HistoryScreen(
+    onHomeClick: () -> Unit,
+    onHistoryClick: () -> Unit,
+    onCartClick: () -> Unit,    // ДОБАВЛЕНО: Теперь MainScreen увидит этот параметр
+    onProfileClick: () -> Unit
+) {
     val historyList = listOf(
         HistoryItem("Spacy fresh crab", "Waroenk kita", 35, R.drawable.menuphoto),
         HistoryItem("Spacy fresh crab", "Waroenk kita", 35, R.drawable.menuphoto),
@@ -42,7 +46,14 @@ fun HistoryScreen() {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
-            // Здесь будет твой BottomBar из MainScreen
+            // ИСПОЛЬЗУЕМ УНИВЕРСАЛЬНЫЙ FOOTER С 4 ПАРАМЕТРАМИ
+            AppFooter(
+                currentScreen = "history",
+                onHomeClick = onHomeClick,
+                onHistoryClick = onHistoryClick,
+                onCartClick = onCartClick, // ПЕРЕДАЕМ КЛИК КОРЗИНЫ
+                onProfileClick = onProfileClick
+            )
         }
     ) { innerPadding ->
         Box(
@@ -68,12 +79,10 @@ fun HistoryScreen() {
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                // КАРТОЧКА ДОСТАВКИ
                 DeliveryStatusCard()
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                // СПИСОК ПРОШЛЫХ ЗАКАЗОВ
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(15.dp),
                     contentPadding = PaddingValues(bottom = 20.dp)
@@ -87,6 +96,7 @@ fun HistoryScreen() {
     }
 }
 
+// Вспомогательные функции (DeliveryStatusCard и HistoryOrderCard) оставляем как у тебя
 @Composable
 fun DeliveryStatusCard() {
     Card(
@@ -103,47 +113,30 @@ fun DeliveryStatusCard() {
                 fontSize = 18.sp,
                 modifier = Modifier.padding(bottom = 10.dp)
             )
-
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Image(
                     painter = painterResource(id = R.drawable.userprofile),
                     contentDescription = null,
-                    modifier = Modifier
-                        .size(60.dp)
-                        .clip(RoundedCornerShape(15.dp)),
+                    modifier = Modifier.size(60.dp).clip(RoundedCornerShape(15.dp)),
                     contentScale = ContentScale.Crop
                 )
                 Column(modifier = Modifier.padding(start = 15.dp)) {
                     Text(text = "Mr Kemplas", fontWeight = FontWeight.Bold, fontSize = 16.sp)
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.timeicon),
-                            contentDescription = null,
-                            tint = Color(0xFF66BB6A),
-                            modifier = Modifier.size(14.dp)
-                        )
+                        Icon(painterResource(id = R.drawable.timeicon), null, tint = Color(0xFF66BB6A), modifier = Modifier.size(14.dp))
                         Text(text = " 20 minutes on the way", color = Color.Gray, fontSize = 12.sp)
                     }
                 }
             }
-
             Spacer(modifier = Modifier.height(15.dp))
-
             Button(
                 onClick = { /* Вызов */ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(45.dp),
+                modifier = Modifier.fillMaxWidth().height(45.dp),
                 shape = RoundedCornerShape(15.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF1FDF5))
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.calllogo),
-                        contentDescription = null,
-                        tint = Color(0xFF66BB6A),
-                        modifier = Modifier.size(20.dp)
-                    )
+                    Icon(painterResource(id = R.drawable.calllogo), null, tint = Color(0xFF66BB6A), modifier = Modifier.size(20.dp))
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(text = "Call", color = Color(0xFF66BB6A), fontWeight = FontWeight.Bold)
                 }
@@ -160,27 +153,20 @@ fun HistoryOrderCard(item: HistoryItem) {
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(1.dp)
     ) {
-        Row(
-            modifier = Modifier.padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
             Image(
                 painter = painterResource(id = item.imageRes),
                 contentDescription = null,
-                modifier = Modifier
-                    .size(60.dp)
-                    .clip(RoundedCornerShape(12.dp)),
+                modifier = Modifier.size(60.dp).clip(RoundedCornerShape(12.dp)),
                 contentScale = ContentScale.Crop
             )
-            Column(modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 12.dp)) {
+            Column(modifier = Modifier.weight(1f).padding(horizontal = 12.dp)) {
                 Text(text = item.name, fontWeight = FontWeight.Bold, fontSize = 15.sp)
                 Text(text = item.restaurant, color = Color.Gray, fontSize = 12.sp)
                 Text(text = "$ ${item.price}", color = startRed, fontWeight = FontWeight.Bold, fontSize = 18.sp)
             }
             Button(
-                onClick = { /* Повторить заказ */ },
+                onClick = { /* Повторить */ },
                 colors = ButtonDefaults.buttonColors(containerColor = startRed),
                 shape = RoundedCornerShape(12.dp),
                 contentPadding = PaddingValues(horizontal = 15.dp, vertical = 5.dp)
@@ -195,6 +181,6 @@ fun HistoryOrderCard(item: HistoryItem) {
 @Composable
 fun HistoryPreview() {
     AppTheme {
-        HistoryScreen()
+        HistoryScreen(onHomeClick = {}, onHistoryClick = {}, onCartClick = {}, onProfileClick = {})
     }
 }

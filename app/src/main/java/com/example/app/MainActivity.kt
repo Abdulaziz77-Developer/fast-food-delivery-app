@@ -65,6 +65,12 @@ fun MainScreen() {
         spleshScreen = false
     }
 
+    // Общие лямбды для навигации
+    val navigateToHome = { currentScreen = "food_explorer" }
+    val navigateToHistory = { currentScreen = "history" }
+    val navigateToCart = { currentScreen = "cart" }
+    val navigateToProfile = { currentScreen = "profile" }
+
     if (spleshScreen) {
         WavesOfFoodScreen()
     } else {
@@ -82,14 +88,15 @@ fun MainScreen() {
 
             "food_explorer" -> {
                 FoodExplorerScreen(
-                    onHomeClick = { currentScreen = "food_explorer" },
+                    onHomeClick = navigateToHome,
                     onPopularClick = { currentScreen = "search_foods" },
                     onFoodClick = { food ->
                         selectedFood = food
                         currentScreen = "food_details"
                     },
-                    onCartClick = { currentScreen = "cart" },
-                    onHistoryClick = { currentScreen = "history" } // РАБОТАЕТ
+                    onCartClick = navigateToCart,
+                    onHistoryClick = navigateToHistory,
+                    onProfileClick = navigateToProfile
                 )
             }
 
@@ -97,54 +104,59 @@ fun MainScreen() {
                 selectedFood?.let { food ->
                     FoodDetailsScreen(
                         food = food,
-                        onBackClick = { currentScreen = "food_explorer" },
-                        onAddToCartClick = { currentScreen = "cart" }
+                        onBackClick = navigateToHome,
+                        onAddToCartClick = navigateToCart
                     )
                 }
             }
 
             "search_foods" -> {
                 SearchFoodsScreen(
-                    onHomeClick = { currentScreen = "food_explorer" },
-                    onHistoryClick = { currentScreen = "history" } // РАБОТАЕТ
+                    onHomeClick = navigateToHome,
+                    onHistoryClick = navigateToHistory,
+                    onCartClick = navigateToCart,    // ДОБАВЛЕНО
+                    onProfileClick = navigateToProfile // ДОБАВЛЕНО
                 )
-            }
-
-            "restaurant_details" -> {
-                RestaurantDetailsScreen(onBackClick = { currentScreen = "food_explorer" })
             }
 
             "cart" -> {
                 CartScreen(
-                    onBackClick = { currentScreen = "food_explorer" },
-                    onHomeClick = { currentScreen = "food_explorer" },
+                    onBackClick = navigateToHome,      // ИСПРАВЛЕНО: добавлена навигация назад
+                    onHomeClick = navigateToHome,
                     onProceedClick = { currentScreen = "edit_order" },
-                    onHistoryClick = { currentScreen = "history" } // РАБОТАЕТ
+                    onHistoryClick = navigateToHistory,
+                    onCartClick = navigateToCart,       // ДОБАВЛЕНО
+                    onProfileClick = navigateToProfile  // ДОБАВЛЕНО
                 )
             }
 
             "edit_order" -> {
                 EditOrderScreen(
-                    onBackClick = { currentScreen = "cart" },
-                    onPlaceOrderClick = {
-                        currentScreen = "congrats"
-                    }
+                    onBackClick = navigateToCart,
+                    onPlaceOrderClick = { currentScreen = "congrats" }
                 )
             }
 
             "congrats" -> {
-                CongratsScreen(
-                    onGoHomeClick = {
-                        currentScreen = "food_explorer"
-                    }
+                CongratsScreen(onGoHomeClick = navigateToHome)
+            }
+
+            "history" -> {
+                HistoryScreen(
+                    onHomeClick = navigateToHome,
+                    onCartClick = navigateToCart,
+                    onHistoryClick = navigateToHistory,
+                    onProfileClick = navigateToProfile
                 )
             }
 
-            // НОВЫЙ БЛОК: Страница истории заказов
-            "history" -> {
-                HistoryScreen()
-                // Если в HistoryScreen ты тоже добавишь BottomBar,
-                // передай туда onHomeClick = { currentScreen = "food_explorer" }
+            "profile" -> {
+                ProfileScreen(
+                    onHomeClick = navigateToHome,
+                    onCartClick = navigateToCart,
+                    onHistoryClick = navigateToHistory,
+                    onProfileClick = navigateToProfile
+                )
             }
         }
     }

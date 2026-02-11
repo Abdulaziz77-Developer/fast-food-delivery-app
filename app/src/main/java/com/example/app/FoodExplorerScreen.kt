@@ -30,14 +30,18 @@ fun FoodExplorerScreen(
     onPopularClick: () -> Unit,
     onFoodClick: (FoodItemData) -> Unit,
     onCartClick: () -> Unit,
-    onHistoryClick: () -> Unit // Добавлено: параметр для перехода в историю
+    onHistoryClick: () -> Unit,
+    onProfileClick: () -> Unit
 ) {
     Scaffold(
         bottomBar = {
-            CustomBottomMenu(
+            // ИСПРАВЛЕНО: Добавлен onCartClick, чтобы аргументы совпали с функцией AppFooter
+            AppFooter(
+                currentScreen = "food_explorer",
                 onHomeClick = onHomeClick,
-                onCartClick = onCartClick,
-                onHistoryClick = onHistoryClick // Передаем в меню
+                onHistoryClick = onHistoryClick,
+                onCartClick = onCartClick,    // ЭТОГО ПАРАМЕТРА НЕ ХВАТАЛО
+                onProfileClick = onProfileClick
             )
         },
         floatingActionButton = {
@@ -79,6 +83,8 @@ fun FoodExplorerScreen(
         }
     }
 }
+
+// --- Остальные функции (без изменений, но включены для работы файла) ---
 
 @Composable
 fun FoodItemCard(food: FoodItemData, onClick: () -> Unit) {
@@ -140,11 +146,11 @@ fun SearchSection() {
         leadingIcon = { Icon(painterResource(id = R.drawable.search), null, tint = startRed) },
         modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
         shape = RoundedCornerShape(15.dp),
-        colors = TextFieldDefaults.colors(
+        colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = Color(0xFFFDECEC),
             unfocusedContainerColor = Color(0xFFFDECEC),
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent
+            focusedBorderColor = Color.Transparent,
+            unfocusedBorderColor = Color.Transparent
         )
     )
 }
@@ -166,57 +172,7 @@ fun BannerSection() {
     }
 }
 
-@Composable
-fun CustomBottomMenu(
-    onHomeClick: () -> Unit,
-    onCartClick: () -> Unit,
-    onHistoryClick: () -> Unit // Добавлено: обработчик истории
-) {
-    Surface(
-        modifier = Modifier.fillMaxWidth().height(80.dp).clip(RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp)),
-        color = Color.White, shadowElevation = 10.dp
-    ) {
-        Row(
-            modifier = Modifier.fillMaxSize(),
-            horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .background(Color(0xFFE8F5E9), RoundedCornerShape(12.dp))
-                    .clickable { onHomeClick() }
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-            ) {
-                Icon(painterResource(id = R.drawable.home), null, tint = Color(0xFF2E7D32))
-                Text("Home", color = Color(0xFF2E7D32), fontSize = 12.sp)
-            }
-
-            Icon(
-                painter = painterResource(id = R.drawable.shoppingcart),
-                contentDescription = "Cart",
-                modifier = Modifier
-                    .size(28.dp)
-                    .clickable { onCartClick() }
-            )
-
-            Icon(painterResource(id = R.drawable.caricon), null, modifier = Modifier.size(28.dp))
-
-            // ИСПРАВЛЕНО: Добавлен clickable для перехода на HistoryScreen
-            Icon(
-                painter = painterResource(id = R.drawable.barmenu),
-                contentDescription = "History",
-                modifier = Modifier
-                    .size(28.dp)
-                    .clickable { onHistoryClick() }
-            )
-
-            Icon(painterResource(id = R.drawable.user1), null, modifier = Modifier.size(28.dp))
-        }
-    }
-}
-
-// --- Модель данных ---
+// Данные и Превью
 data class FoodItemData(
     val name: String,
     val restaurant: String,
@@ -226,21 +182,15 @@ data class FoodItemData(
 )
 
 fun getPopularFoodData() = listOf(
-    FoodItemData("Herbal Pancake", "Warung Herbal", 7, R.drawable.menuphoto, "Delicious and crispy herbal pancakes..."),
-    FoodItemData("Fruit Salad", "Wijie Resto", 5, R.drawable.itemfood1, "A refreshing mix of tropical fruits..."),
-    FoodItemData("Green Noodle", "Noodle Home", 15, R.drawable.itemfood2, "Handmade spinach noodles...")
+    FoodItemData("Herbal Pancake", "Warung Herbal", 7, R.drawable.menuphoto, "Description..."),
+    FoodItemData("Fruit Salad", "Wijie Resto", 5, R.drawable.itemfood1, "Description..."),
+    FoodItemData("Green Noodle", "Noodle Home", 15, R.drawable.itemfood2, "Description...")
 )
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun FoodExplorerScreenPreview() {
     AppTheme {
-        FoodExplorerScreen(
-            onHomeClick = {},
-            onPopularClick = {},
-            onFoodClick = { food -> },
-            onCartClick = {},
-            onHistoryClick = {} // Добавлено для превью
-        )
+        FoodExplorerScreen({}, {}, {}, {}, {}, {})
     }
 }
