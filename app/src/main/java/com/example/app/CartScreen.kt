@@ -1,12 +1,11 @@
 package com.example.app
 
-import androidx.compose.animation.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -25,151 +24,62 @@ import com.example.app.ui.theme.AppTheme
 import com.example.app.ui.theme.YongFontFamily
 import com.example.app.ui.theme.startRed
 
-// Модель данных (оставляем без изменений)
+// Модель для элемента корзины
 data class CartItem(
     val id: Int,
     val name: String,
     val restaurant: String,
     val price: Int,
     val imageRes: Int,
-    val quantity: Int = 0
+    var quantity: Int = 1
 )
 
 @Composable
-fun CartScreen(
-    onBackClick: () -> Unit,
-    onHomeClick: () -> Unit,
-    onProceedClick: () -> Unit
-) {
-    // ИСПРАВЛЕНО: Ставим количество 0, чтобы красное окно было скрыто при запуске
+fun CartScreen(onBackClick: () -> Unit) {
+    // Временный список данных
     val cartItems = remember {
         mutableStateListOf(
-            CartItem(1, "Spacy fresh crab", "Waroenk kita", 35, R.drawable.menuphoto, 0),
-            CartItem(2, "Spacy fresh crab", "Waroenk kita", 35, R.drawable.menuphoto, 0),
-            CartItem(3, "Spacy fresh crab", "Waroenk kita", 35, R.drawable.menuphoto, 0)
+            CartItem(1, "Spacy fresh crab", "Waroenk kita", 35, R.drawable.menuphoto),
+            CartItem(2, "Spacy fresh crab", "Waroenk kita", 35, R.drawable.menuphoto),
+            CartItem(3, "Spacy fresh crab", "Waroenk kita", 35, R.drawable.menuphoto)
         )
     }
 
-    // Расчеты
-    val subTotal = cartItems.sumOf { it.price * it.quantity }
-    val totalQuantity = cartItems.sumOf { it.quantity }
-    val deliveryCharge = if (totalQuantity > 0) 10 else 0
-    val discount = if (totalQuantity > 0) 20 else 0
-    val finalTotal = (subTotal + deliveryCharge - discount).coerceAtLeast(0)
+    Box(modifier = Modifier.fillMaxSize().background(Color(0xFFFBFBFB))) {
+        Column(modifier = Modifier.fillMaxSize()) {
 
-    Scaffold(
-        bottomBar = {
-            CartBottomNavigationBar(
-                onHomeClick = onHomeClick,
-                onCartClick = { /* Мы уже здесь */ }
+            // Заголовок страницы
+            Text(
+                text = "Cart",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 40.dp, bottom = 10.dp),
+                textAlign = TextAlign.Center,
+                fontSize = 24.sp,
+                fontFamily = YongFontFamily,
+                color = startRed,
+                fontWeight = FontWeight.Bold
             )
-        }
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0xFFFBFBFB))
-                .padding(paddingValues = innerPadding)
-        ) {
-            Column(modifier = Modifier.fillMaxSize()) {
 
-                // HEADER
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 24.dp, top = 20.dp, end = 24.dp, bottom = 10.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Explore Your Favorite Food",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        fontFamily = YongFontFamily,
-                        color = startRed,
-                        modifier = Modifier.width(220.dp)
-                    )
-                    Icon(
-                        painterResource(id = R.drawable.notification_bell),
-                        null,
-                        tint = Color(0xFF66BB6A),
-                        modifier = Modifier.size(28.dp)
-                    )
-                }
-
-                // SEARCH
-                OutlinedTextField(
-                    value = "",
-                    onValueChange = {},
-                    placeholder = { Text("What do you want to order?", color = Color(0xFFD3A0A0), fontSize = 14.sp) },
-                    leadingIcon = { Icon(painterResource(id = R.drawable.search), null, tint = startRed, modifier = Modifier.size(20.dp)) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 24.dp, vertical = 8.dp)
-                        .height(56.dp),
-                    shape = RoundedCornerShape(15.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor = Color(0xFFFDECEC),
-                        unfocusedContainerColor = Color(0xFFFDECEC),
-                        focusedBorderColor = Color.Transparent,
-                        unfocusedBorderColor = Color.Transparent
-                    )
-                )
-
-                Text(
-                    text = "Cart",
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
-                    textAlign = TextAlign.Center,
-                    fontSize = 24.sp,
-                    fontFamily = YongFontFamily,
-                    color = startRed,
-                    fontWeight = FontWeight.Bold
-                )
-
-                // Список товаров
-                LazyColumn(
-                    modifier = Modifier.weight(1f),
-                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    itemsIndexed(cartItems) { index, item ->
-                        CartItemCard(
-                            item = item,
-                            onPlusClick = { cartItems[index] = item.copy(quantity = item.quantity + 1) },
-                            onMinusClick = { if (item.quantity > 0) cartItems[index] = item.copy(quantity = item.quantity - 1) },
-                            onDeleteClick = { cartItems[index] = item.copy(quantity = 0) }
-                        )
-                    }
+            // Список товаров в корзине
+            LazyColumn(
+                modifier = Modifier.weight(1f),
+                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(cartItems) { item ->
+                    CartItemCard(item)
                 }
             }
 
-            // ПАНЕЛЬ С СУММОЙ: Появится только если нажать на плюс
-            Box(modifier = Modifier.align(Alignment.BottomCenter)) {
-                AnimatedVisibility(
-                    visible = totalQuantity > 0,
-                    enter = fadeIn() + slideInVertically(initialOffsetY = { it }),
-                    exit = fadeOut() + slideOutVertically(targetOffsetY = { it })
-                ) {
-                    CartSummarySection(
-                        subTotal = subTotal,
-                        delivery = deliveryCharge,
-                        discount = discount,
-                        total = finalTotal,
-                        onProceedClick = onProceedClick // ПЕРЕХОД РАБОТАЕТ
-                    )
-                }
-            }
+            // Нижний блок с итогами (Красная карточка)
+            CartSummarySection()
         }
     }
 }
 
 @Composable
-fun CartItemCard(
-    item: CartItem,
-    onPlusClick: () -> Unit,
-    onMinusClick: () -> Unit,
-    onDeleteClick: () -> Unit
-) {
+fun CartItemCard(item: CartItem) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(22.dp),
@@ -183,7 +93,9 @@ fun CartItemCard(
             Image(
                 painter = painterResource(id = item.imageRes),
                 contentDescription = null,
-                modifier = Modifier.size(64.dp).clip(RoundedCornerShape(15.dp)),
+                modifier = Modifier
+                    .size(64.dp)
+                    .clip(RoundedCornerShape(15.dp)),
                 contentScale = ContentScale.Crop
             )
 
@@ -193,9 +105,14 @@ fun CartItemCard(
                 Text(text = "$ ${item.price}", color = startRed, fontWeight = FontWeight.Bold, fontSize = 18.sp)
             }
 
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            // Кнопки управления количеством
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                // Минус
                 Surface(
-                    modifier = Modifier.size(26.dp).clickable { onMinusClick() },
+                    modifier = Modifier.size(26.dp).clickable { /* логика - */ },
                     shape = RoundedCornerShape(8.dp),
                     color = Color(0xFFE8F5E9)
                 ) {
@@ -204,18 +121,20 @@ fun CartItemCard(
 
                 Text(text = "${item.quantity}", fontWeight = FontWeight.Bold)
 
+                // Плюс
                 Surface(
-                    modifier = Modifier.size(26.dp).clickable { onPlusClick() },
+                    modifier = Modifier.size(26.dp).clickable { /* логика + */ },
                     shape = RoundedCornerShape(8.dp),
                     color = startRed
                 ) {
                     Icon(painterResource(id = R.drawable.addicon), null, tint = Color.White, modifier = Modifier.padding(6.dp))
                 }
 
+                // Иконка удаления (корзина)
                 Icon(
                     painter = painterResource(id = R.drawable.deleteicon),
                     contentDescription = null,
-                    modifier = Modifier.padding(start = 8.dp).size(24.dp).clickable { onDeleteClick() }
+                    modifier = Modifier.padding(start = 8.dp).size(24.dp).clickable { /* удалить */ }
                 )
             }
         }
@@ -223,35 +142,32 @@ fun CartItemCard(
 }
 
 @Composable
-fun CartSummarySection(
-    subTotal: Int,
-    delivery: Int,
-    discount: Int,
-    total: Int,
-    onProceedClick: () -> Unit
-) {
+fun CartSummarySection() {
     Card(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 10.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(24.dp),
         shape = RoundedCornerShape(25.dp),
         colors = CardDefaults.cardColors(containerColor = startRed)
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
-            SummaryLine("Sub-Total", "$subTotal $")
-            SummaryLine("Delivery Charge", "$delivery $")
-            SummaryLine("Discount", "$discount $")
+            SummaryLine("Sub-Total", "120 $")
+            SummaryLine("Delivery Charge", "10 $")
+            SummaryLine("Discount", "20 $")
 
             Spacer(modifier = Modifier.height(12.dp))
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text("Total", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.ExtraBold)
-                Text("$total $", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.ExtraBold)
+                Text("150 $", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.ExtraBold)
             }
 
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
+            // Белая кнопка Proceed
             Button(
-                onClick = { onProceedClick() },
-                modifier = Modifier.fillMaxWidth().height(50.dp),
+                onClick = { /* Оформить заказ */ },
+                modifier = Modifier.fillMaxWidth().height(56.dp),
                 shape = RoundedCornerShape(15.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White)
             ) {
@@ -272,61 +188,10 @@ fun SummaryLine(label: String, value: String) {
     }
 }
 
-@Composable
-fun CartBottomNavigationBar(onHomeClick: () -> Unit, onCartClick: () -> Unit) {
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(80.dp)
-            .clip(RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp)),
-        color = Color.White,
-        shadowElevation = 8.dp
-    ) {
-        Row(
-            modifier = Modifier.fillMaxSize(),
-            horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.clickable { onHomeClick() }.padding(8.dp)
-            ) {
-                Icon(painterResource(id = R.drawable.home), null, tint = Color(0xFF2E7D32))
-                Text("Home", color = Color(0xFF2E7D32), fontSize = 12.sp)
-            }
-            Box(
-                modifier = Modifier
-                    .size(45.dp)
-                    .background(Color(0xFFE8F5E9), RoundedCornerShape(12.dp))
-                    .clickable { onCartClick() },
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(painterResource(id = R.drawable.shoppingcart), null, tint = Color(0xFF2E7D32))
-            }
-            Icon(painterResource(id = R.drawable.caricon), null, modifier = Modifier.size(24.dp))
-            Icon(painterResource(id = R.drawable.barmenu), null, modifier = Modifier.size(24.dp))
-            Icon(painterResource(id = R.drawable.user1), null, modifier = Modifier.size(24.dp))
-        }
-    }
-}
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true,showSystemUi = true)
 @Composable
 fun CartPreview() {
     AppTheme {
-        // Создаем тестовое состояние специально для превью
-        val previewItems = remember {
-            mutableStateListOf(
-                CartItem(1, "Spacy fresh crab", "Waroenk kita", 35, R.drawable.menuphoto, 1),
-                CartItem(2, "Spacy fresh crab", "Waroenk kita", 35, R.drawable.menuphoto, 0),
-                CartItem(3, "Spacy fresh crab", "Waroenk kita", 35, R.drawable.menuphoto, 0)
-            )
-        }
-
-        // Вызываем экран с пустыми обработчиками
-        CartScreen(
-            onBackClick = {},
-            onHomeClick = {},
-            onProceedClick = {}
-        )
+        CartScreen(onBackClick = {})
     }
 }

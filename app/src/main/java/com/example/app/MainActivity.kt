@@ -110,6 +110,7 @@ fun MainScreen() {
                 RestaurantDetailsScreen(onBackClick = { currentScreen = "food_explorer" })
             }
 
+<<<<<<< HEAD
             "cart" -> {
                 CartScreen(
                     onBackClick = { currentScreen = "food_explorer" },
@@ -129,6 +130,12 @@ fun MainScreen() {
                         println("Order placed successfully!")
                     }
                 )
+=======
+            // --- ДОБАВЬ ЭТОТ БЛОК ---
+            "cart" -> {
+                CartScreen(onBackClick = { currentScreen = "food_explorer" },
+                    onHomeClick = { currentScreen = "food_explorer" })
+>>>>>>> origin/main
             }
         }
     }
