@@ -41,7 +41,8 @@ fun CartScreen(
     onProceedClick: () -> Unit,
     onHistoryClick: () -> Unit,
     onCartClick: () -> Unit,
-    onProfileClick: () -> Unit
+    onProfileClick: () -> Unit,
+    onNotificationClick: () -> Unit // Добавил только этот параметр для перехода
 ) {
     val cartItems = remember {
         mutableStateListOf(
@@ -109,7 +110,16 @@ fun CartScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text("Explore Your Favorite Food", fontSize = 24.sp, fontWeight = FontWeight.Bold, fontFamily = YongFontFamily, color = startRed, modifier = Modifier.width(220.dp))
-                Icon(painterResource(id = R.drawable.notification_bell), null, tint = Color(0xFF66BB6A), modifier = Modifier.size(28.dp))
+
+                // ТУТ ИЗМЕНЕНИЕ: добавил .clickable и вызвал onNotificationClick
+                Icon(
+                    painter = painterResource(id = R.drawable.notification_bell),
+                    null,
+                    tint = Color(0xFF66BB6A),
+                    modifier = Modifier
+                        .size(28.dp)
+                        .clickable { onNotificationClick() }
+                )
             }
 
             // Search
@@ -210,6 +220,6 @@ fun SummaryLine(label: String, value: String) {
 @Composable
 fun CartScreenPreview() {
     AppTheme {
-        CartScreen({}, {}, {}, {}, {}, {})
+        CartScreen({}, {}, {}, {}, {}, {}, {})
     }
 }

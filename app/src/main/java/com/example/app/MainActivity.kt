@@ -70,6 +70,7 @@ fun MainScreen() {
     val navigateToHistory = { currentScreen = "history" }
     val navigateToCart = { currentScreen = "cart" }
     val navigateToProfile = { currentScreen = "profile" }
+    val navigateToNotifications = { currentScreen = "notification" } // Новая лямбда
 
     if (spleshScreen) {
         WavesOfFoodScreen()
@@ -96,7 +97,8 @@ fun MainScreen() {
                     },
                     onCartClick = navigateToCart,
                     onHistoryClick = navigateToHistory,
-                    onProfileClick = navigateToProfile
+                    onProfileClick = navigateToProfile,
+                    onNotificationClick = navigateToNotifications // ПЕРЕДАЕМ ПЕРЕХОД
                 )
             }
 
@@ -114,19 +116,20 @@ fun MainScreen() {
                 SearchFoodsScreen(
                     onHomeClick = navigateToHome,
                     onHistoryClick = navigateToHistory,
-                    onCartClick = navigateToCart,    // ДОБАВЛЕНО
-                    onProfileClick = navigateToProfile // ДОБАВЛЕНО
+                    onCartClick = navigateToCart,
+                    onProfileClick = navigateToProfile
                 )
             }
 
             "cart" -> {
                 CartScreen(
-                    onBackClick = navigateToHome,      // ИСПРАВЛЕНО: добавлена навигация назад
+                    onBackClick = navigateToHome,
                     onHomeClick = navigateToHome,
                     onProceedClick = { currentScreen = "edit_order" },
                     onHistoryClick = navigateToHistory,
-                    onCartClick = navigateToCart,       // ДОБАВЛЕНО
-                    onProfileClick = navigateToProfile  // ДОБАВЛЕНО
+                    onCartClick = navigateToCart,
+                    onProfileClick = navigateToProfile,
+                    onNotificationClick = navigateToNotifications // ПЕРЕДАЕМ ПЕРЕХОД
                 )
             }
 
@@ -156,6 +159,13 @@ fun MainScreen() {
                     onCartClick = navigateToCart,
                     onHistoryClick = navigateToHistory,
                     onProfileClick = navigateToProfile
+                )
+            }
+
+            // ДОБАВЛЕН ЭКРАН УВЕДОМЛЕНИЙ
+            "notification" -> {
+                NotificationScreen(
+                    onBackClick = { currentScreen = "food_explorer" } // Возврат назад
                 )
             }
         }

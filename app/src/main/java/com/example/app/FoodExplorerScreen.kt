@@ -31,16 +31,16 @@ fun FoodExplorerScreen(
     onFoodClick: (FoodItemData) -> Unit,
     onCartClick: () -> Unit,
     onHistoryClick: () -> Unit,
-    onProfileClick: () -> Unit
+    onProfileClick: () -> Unit,
+    onNotificationClick: () -> Unit // ДОБАВИЛИ ПАРАМЕТР ПЕРЕХОДА
 ) {
     Scaffold(
         bottomBar = {
-            // ИСПРАВЛЕНО: Добавлен onCartClick, чтобы аргументы совпали с функцией AppFooter
             AppFooter(
                 currentScreen = "food_explorer",
                 onHomeClick = onHomeClick,
                 onHistoryClick = onHistoryClick,
-                onCartClick = onCartClick,    // ЭТОГО ПАРАМЕТРА НЕ ХВАТАЛО
+                onCartClick = onCartClick,
                 onProfileClick = onProfileClick
             )
         },
@@ -61,7 +61,8 @@ fun FoodExplorerScreen(
                 .background(Color(0xFFFBFBFB))
                 .padding(padding)
         ) {
-            item { HeaderSection() }
+            // ПЕРЕДАЕМ КЛИК В ХЕДЕР
+            item { HeaderSection(onNotificationClick = onNotificationClick) }
             item { SearchSection() }
             item { BannerSection() }
             item {
@@ -83,8 +84,6 @@ fun FoodExplorerScreen(
         }
     }
 }
-
-// --- Остальные функции (без изменений, но включены для работы файла) ---
 
 @Composable
 fun FoodItemCard(food: FoodItemData, onClick: () -> Unit) {
@@ -114,7 +113,7 @@ fun FoodItemCard(food: FoodItemData, onClick: () -> Unit) {
 }
 
 @Composable
-fun HeaderSection() {
+fun HeaderSection(onNotificationClick: () -> Unit) { // ДОБАВИЛИ CALLBACK
     Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 20.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -128,11 +127,14 @@ fun HeaderSection() {
             color = startRed,
             modifier = Modifier.width(220.dp)
         )
+        // ТЕПЕРЬ КОЛОКОЛЬЧИК КЛИКАБЕЛЬНЫЙ
         Icon(
             painterResource(id = R.drawable.notification_bell),
             null,
             tint = Color(0xFF66BB6A),
-            modifier = Modifier.size(32.dp)
+            modifier = Modifier
+                .size(32.dp)
+                .clickable { onNotificationClick() } // ПЕРЕХОД
         )
     }
 }
@@ -172,7 +174,6 @@ fun BannerSection() {
     }
 }
 
-// Данные и Превью
 data class FoodItemData(
     val name: String,
     val restaurant: String,
@@ -191,6 +192,7 @@ fun getPopularFoodData() = listOf(
 @Composable
 fun FoodExplorerScreenPreview() {
     AppTheme {
-        FoodExplorerScreen({}, {}, {}, {}, {}, {})
+        // Добавлен пустой аргумент для Preview
+        FoodExplorerScreen({}, {}, {}, {}, {}, {}, {})
     }
 }
