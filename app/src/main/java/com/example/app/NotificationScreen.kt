@@ -21,7 +21,8 @@ import com.example.app.ui.theme.startRed
 
 @Composable
 fun NotificationScreen(
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onNotificationClick: () -> Unit // ДОБАВИЛИ: для перехода на FeedbackScreen
 ) {
     Column(
         modifier = Modifier
@@ -29,28 +30,28 @@ fun NotificationScreen(
             .background(Color.White)
             .padding(horizontal = 24.dp, vertical = 40.dp)
     ) {
-        // Кнопка назад (Оранжевая стрелка в светлом квадрате)
+        // Кнопка назад
         Box(
             modifier = Modifier
                 .size(45.dp)
                 .background(
-                    color = Color(0xFFFFEFD5), // Светло-оранжевый фон
+                    color = Color(0xFFFFEFD5),
                     shape = RoundedCornerShape(15.dp)
                 )
                 .clickable { onBackClick() },
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.feedback), // Убедись, что иконка есть в drawable
+                painter = painterResource(id = R.drawable.feedback),
                 contentDescription = "Back",
-                tint = Color(0xFFDAA520), // Золотистый цвет стрелки
+                tint = Color(0xFFDAA520),
                 modifier = Modifier.size(24.dp)
             )
         }
 
         Spacer(modifier = Modifier.height(30.dp))
 
-        // Заголовок (Hello, lorem ipsum)
+        // Заголовок
         Text(
             text = "Hello, lorem ipsum",
             fontSize = 24.sp,
@@ -68,21 +69,24 @@ fun NotificationScreen(
             NotificationRow(
                 iconRes = R.drawable.sadface,
                 message = "Your order has been Canceled Successfully",
-                iconColor = Color(0xFFFFA07A) // Оранжево-красный
+                iconColor = Color(0xFFFFA07A),
+                onClick = onNotificationClick // Переход по клику
             )
 
             // 2. Курьер взял заказ
             NotificationRow(
                 iconRes = R.drawable.caricon,
                 message = "Order has been taken by the driver",
-                iconColor = Color(0xFF66BB6A) // Зеленый
+                iconColor = Color(0xFF66BB6A),
+                onClick = onNotificationClick // Переход по клику
             )
 
             // 3. Заказ успешно размещен
             NotificationRow(
                 iconRes = R.drawable.chek_icon,
                 message = "Congrats Your Order Placed",
-                iconColor = Color(0xFF66BB6A) // Зеленый
+                iconColor = Color(0xFF66BB6A),
+                onClick = onNotificationClick // Переход по клику
             )
         }
     }
@@ -92,11 +96,15 @@ fun NotificationScreen(
 fun NotificationRow(
     iconRes: Int,
     message: String,
-    iconColor: Color
+    iconColor: Color,
+    onClick: () -> Unit // ДОБАВИЛИ ПАРАМЕТР
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() } // ТЕПЕРЬ СТРОКА КЛИКАБЕЛЬНА
+            .padding(vertical = 4.dp)
     ) {
         // Иконка статуса
         Icon(
@@ -123,6 +131,6 @@ fun NotificationRow(
 @Composable
 fun NotificationScreenPreview() {
     AppTheme {
-        NotificationScreen(onBackClick = {})
+        NotificationScreen(onBackClick = {}, onNotificationClick = {})
     }
 }

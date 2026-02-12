@@ -52,6 +52,8 @@ class MainActivity : ComponentActivity() {
 }
 
 
+
+
 @Composable
 fun MainScreen() {
     var spleshScreen by remember { mutableStateOf(true) }
@@ -70,7 +72,7 @@ fun MainScreen() {
     val navigateToHistory = { currentScreen = "history" }
     val navigateToCart = { currentScreen = "cart" }
     val navigateToProfile = { currentScreen = "profile" }
-    val navigateToNotifications = { currentScreen = "notification" } // Новая лямбда
+    val navigateToNotifications = { currentScreen = "notification" }
 
     if (spleshScreen) {
         WavesOfFoodScreen()
@@ -98,7 +100,7 @@ fun MainScreen() {
                     onCartClick = navigateToCart,
                     onHistoryClick = navigateToHistory,
                     onProfileClick = navigateToProfile,
-                    onNotificationClick = navigateToNotifications // ПЕРЕДАЕМ ПЕРЕХОД
+                    onNotificationClick = navigateToNotifications
                 )
             }
 
@@ -129,7 +131,7 @@ fun MainScreen() {
                     onHistoryClick = navigateToHistory,
                     onCartClick = navigateToCart,
                     onProfileClick = navigateToProfile,
-                    onNotificationClick = navigateToNotifications // ПЕРЕДАЕМ ПЕРЕХОД
+                    onNotificationClick = navigateToNotifications
                 )
             }
 
@@ -162,10 +164,19 @@ fun MainScreen() {
                 )
             }
 
-            // ДОБАВЛЕН ЭКРАН УВЕДОМЛЕНИЙ
+            // ИСПРАВЛЕННЫЙ ЭКРАН УВЕДОМЛЕНИЙ
             "notification" -> {
                 NotificationScreen(
-                    onBackClick = { currentScreen = "food_explorer" } // Возврат назад
+                    onBackClick = { currentScreen = "food_explorer" },
+                    onNotificationClick = { currentScreen = "feedback" } // ПЕРЕХОД НА ОТЗЫВ
+                )
+            }
+
+            // НОВЫЙ ЭКРАН ОТЗЫВА
+            "feedback" -> {
+                FeedbackScreen(
+                    onBackClick = { currentScreen = "notification" }, // Возврат к уведомлениям
+                    onSendClick = { currentScreen = "food_explorer" } // После отправки на главную
                 )
             }
         }

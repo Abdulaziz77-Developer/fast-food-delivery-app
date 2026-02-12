@@ -37,15 +37,27 @@ fun FeedbackScreen(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(top = 8.dp)
         ) {
-            Icon(
-                painter = painterResource(id = R.drawable.feedback), // Используй свою иконку назад
-                contentDescription = "Back",
-                tint = Color(0xFFF9A825), // Оранжевый цвет как на скрине
+            // Кнопка назад в светлом квадрате (как на NotificationScreen)
+            Box(
                 modifier = Modifier
-                    .size(32.dp)
-                    .clickable { onBackClick() }
-            )
+                    .size(45.dp)
+                    .background(
+                        color = Color(0xFFFFEFD5),
+                        shape = RoundedCornerShape(15.dp)
+                    )
+                    .clickable { onBackClick() },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.feedback),
+                    contentDescription = "Back",
+                    tint = Color(0xFFDAA520),
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+
             Spacer(modifier = Modifier.width(16.dp))
+
             Text(
                 text = "Write Your Feedback Here",
                 fontSize = 20.sp,
@@ -82,8 +94,8 @@ fun FeedbackScreen(
                     onValueChange = { feedbackText = it },
                     placeholder = {
                         Text(
-                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
-                            color = startRed.copy(alpha = 0.5f),
+                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua...",
+                            color = startRed.copy(alpha = 0.4f),
                             fontSize = 14.sp
                         )
                     },
@@ -91,8 +103,9 @@ fun FeedbackScreen(
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
                         focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent
+                        unfocusedIndicatorColor = Color.Transparent,
                     )
                 )
             }
@@ -121,7 +134,7 @@ fun FeedbackScreen(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun FeedbackScreenPreview() {
     AppTheme {
