@@ -1,5 +1,7 @@
 package com.example.app
 
+import FooterText
+import GradientButton
 import LocationScreen
 import RestaurantDetailsScreen
 import android.os.Bundle
@@ -12,11 +14,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,11 +33,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.app.presentation.screens.CartScreen
+import com.example.app.presentation.screens.FoodExplorerScreen
+import com.example.app.presentation.screens.FoodItemData
 import com.example.app.ui.theme.AppTheme
 import com.example.app.ui.theme.YongFontFamily
 import com.example.app.ui.theme.startRed
@@ -59,7 +68,6 @@ fun MainScreen() {
     var spleshScreen by remember { mutableStateOf(true) }
     var currentScreen by remember { mutableStateOf("home") }
 
-    // Хранилище для выбранной еды
     var selectedFood by remember { mutableStateOf<FoodItemData?>(null) }
 
     LaunchedEffect(Unit) {
@@ -67,7 +75,6 @@ fun MainScreen() {
         spleshScreen = false
     }
 
-    // Общие лямбды для навигации
     val navigateToHome = { currentScreen = "food_explorer" }
     val navigateToHistory = { currentScreen = "history" }
     val navigateToCart = { currentScreen = "cart" }
@@ -163,136 +170,120 @@ fun MainScreen() {
                     onProfileClick = navigateToProfile
                 )
             }
-
-            // ИСПРАВЛЕННЫЙ ЭКРАН УВЕДОМЛЕНИЙ
             "notification" -> {
                 NotificationScreen(
                     onBackClick = { currentScreen = "food_explorer" },
-                    onNotificationClick = { currentScreen = "feedback" } // ПЕРЕХОД НА ОТЗЫВ
+                    onNotificationClick = { currentScreen = "feedback" }
                 )
             }
 
             // НОВЫЙ ЭКРАН ОТЗЫВА
             "feedback" -> {
                 FeedbackScreen(
-                    onBackClick = { currentScreen = "notification" }, // Возврат к уведомлениям
-                    onSendClick = { currentScreen = "food_explorer" } // После отправки на главную
+                    onBackClick = { currentScreen = "notification" },
+                    onSendClick = { currentScreen = "food_explorer" }
                 )
             }
         }
     }
 }
+
 @Composable
-fun WavesOfFoodScreen(){
-    Column(
-        modifier= Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .padding(horizontal = 24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Spacer(
-            modifier = Modifier.height(152.dp)
-        )
-        Image(
-            painter = painterResource(id = R.drawable.logo),
-            contentDescription = "Wafes of food illustration",
-            modifier = Modifier
-                .size(200.dp)
-                .padding(bottom = 16.dp)
-        )
-        Text(
-            text = "Wafes of Food",
-            fontFamily = YongFontFamily,
-            fontWeight = FontWeight.Bold,
-            fontSize = 44.sp,
-            color = testColor,
-            modifier = Modifier
-                .padding(bottom = 32.dp)
-        )
-        Text(
-            text = "Deliever Favorite Food",
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.sp,
-            color = startRed,
-        )
-        Spacer(
-            modifier = Modifier
-                .height(300.dp)
-        )
-        Box(
+fun WavesOfFoodScreen() {
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        containerColor = Color.White
+    ) { innerPadding ->
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 50.dp),
-            contentAlignment = Alignment.BottomCenter
+                .padding(innerPadding)
+                .padding(horizontal = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Spacer(modifier = Modifier.weight(1f))
+
+            Image(
+                painter = painterResource(id = R.drawable.logo),
+                contentDescription = null,
+                modifier = Modifier.size(200.dp)
+            )
+
+            Text(
+                text = "Waves of Food",
+                fontFamily = YongFontFamily,
+                fontWeight = FontWeight.Bold,
+                fontSize = 40.sp,
+                color = testColor
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "Deliver Favorite Food",
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                color = startRed,
+            )
+
+            Spacer(modifier = Modifier.weight(1.5f))
+
+
             FooterText()
         }
     }
 }
 @Composable
-fun Homescreen(onNextClick: () -> Unit) { // Добавили аргумент для обработки нажатия
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .padding(horizontal = 24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Spacer(modifier = Modifier.height(90.dp))
-        Image(
-            painter = painterResource(id = R.drawable.backkgroundstart1),
-            contentDescription = "Wafes of food illustration",
-            modifier = Modifier.size(333.dp)
-        )
-        Text(
-            modifier = Modifier.padding(top = 20.dp),
-            text = "Enjoy Restaurant Quality Meals at Home ",
-            fontFamily = YongFontFamily,
-            fontWeight = FontWeight.Bold,
-            fontSize = 20.sp,
-            color = startRed,
-            textAlign = TextAlign.Center
-        )
-
-        // Используем weight(1f), чтобы прижать кнопку к низу автоматически
-        Spacer(modifier = Modifier.height(260.dp))
-
-        GradientButton("Next") {
-            onNextClick() // Вызываем функцию перехода
-        }
-
-        Box(
+fun Homescreen(onNextClick: () -> Unit) {
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        containerColor = Color.White
+    ) { innerPadding ->
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 50.dp),
-            contentAlignment = Alignment.BottomCenter
+                .padding(innerPadding) // Защита от наезжания на кнопки Mi Phone
+                .padding(horizontal = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // 1. Гибкий отступ сверху
+            Spacer(modifier = Modifier.weight(1f))
+
+            // 2. Иллюстрация (делаем размер адаптивным через fillMaxWidth)
+            Image(
+                painter = painterResource(id = R.drawable.backkgroundstart1),
+                contentDescription = "Illustration",
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .aspectRatio(1f),
+                contentScale = ContentScale.Fit
+            )
+
+            // 3. Текст заголовка
+            Text(
+                modifier = Modifier.padding(top = 32.dp),
+                text = "Enjoy Restaurant Quality Meals at Home",
+                fontFamily = YongFontFamily,
+                fontWeight = FontWeight.Bold,
+                fontSize = 22.sp, // Чуть увеличил для читабельности
+                color = startRed,
+                textAlign = TextAlign.Center,
+                lineHeight = 28.sp
+            )
+
+            // 4. ГИБКИЙ ОТСТУП (вместо 260.dp)
+            // Он будет "выталкивать" кнопку вниз, подстраиваясь под высоту экрана
+            Spacer(modifier = Modifier.weight(1.5f))
+
+            // 5. Кнопка
+            GradientButton("Next") {
+                onNextClick()
+            }
+
+            // 6. Футер (всегда в самом низу с небольшим отступом)
+            Spacer(modifier = Modifier.height(24.dp))
             FooterText()
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
-}
-
-@Composable
-fun GradientButton(text: String,
-            onClick: () -> Unit ) {
-      Box(
-          modifier = Modifier
-              .background(
-                  brush = Brush.horizontalGradient(
-                      colors = listOf(
-                          startRed,
-                          testColor
-                      )
-                  ),
-                  shape = RoundedCornerShape(10.dp)
-              )
-              .clickable {
-                  onClick()
-              }
-              .padding(vertical = 16.dp, horizontal = 24.dp),
-          contentAlignment = Alignment.Center
-      ){
-          Text(text = text, color = Color.White, fontSize = 18.sp, fontFamily = YongFontFamily)
-      }
 }

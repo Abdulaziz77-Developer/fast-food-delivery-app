@@ -1,11 +1,17 @@
 package com.example.app
 
+import FooterText
+import GradientButton
+import MainTextTitle
+import SocialLoginButton
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,54 +24,58 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.app.ui.theme.YongFontFamily
 import com.example.app.ui.theme.startRed
 
 @Composable
-
 fun SignUpScreen(
     onAlreadyHaveAccountClick: () -> Unit = {},
-    onSignUpSuccess: () -> Unit = {} // Добавили параметр успеха для перехода на LocationScreen
+    onSignUpSuccess: () -> Unit = {}
 ) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    val scrollState = rememberScrollState()
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-    ) {
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        containerColor = Color.White
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(innerPadding)
+                .background(Color.White)
+                .verticalScroll(scrollState)
                 .padding(horizontal = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // 1. Отступ сверху
             Spacer(modifier = Modifier.height(40.dp))
 
+            // 2. Логотип (уменьшен для изящности)
             Image(
                 painter = painterResource(id = R.drawable.littlelogo),
                 contentDescription = "Logo",
-                modifier = Modifier.size(91.dp)
+                modifier = Modifier.size(80.dp)
             )
 
             MainTextTitle()
 
+            // 3. Заголовок (уменьшен шрифт)
             Text(
                 text = "Sign Up Here",
-                fontSize = 24.sp,
+                fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
                 color = startRed,
-                modifier = Modifier.padding(top = 16.dp)
+                modifier = Modifier.padding(top = 12.dp)
             )
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            // Поле Имя
+            // 4. Поля ввода (используем AuthInputField)
             AuthInputField(
                 value = name,
                 onValueChange = { name = it },
@@ -73,9 +83,8 @@ fun SignUpScreen(
                 leadingIcon = R.drawable.user
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-            // Поле Email
             AuthInputField(
                 value = email,
                 onValueChange = { email = it },
@@ -83,9 +92,8 @@ fun SignUpScreen(
                 leadingIcon = R.drawable.email
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-            // Поле Пароль
             AuthInputField(
                 value = password,
                 onValueChange = { password = it },
@@ -94,55 +102,55 @@ fun SignUpScreen(
                 isPassword = true
             )
 
+            // 5. Разделитель
             Text(
                 text = "or",
-                fontSize = 16.sp,
+                fontSize = 14.sp,
                 color = Color.Gray,
-                modifier = Modifier.padding(top = 20.dp)
+                modifier = Modifier.padding(top = 16.dp)
             )
 
             Text(
                 text = "Sign Up With",
-                fontSize = 20.sp,
+                fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black,
                 fontFamily = YongFontFamily,
-                modifier = Modifier.padding(top = 10.dp)
+                modifier = Modifier.padding(top = 4.dp)
             )
 
+            // 6. Социальные кнопки
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 20.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    .padding(top = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 SocialLoginButton(
                     text = "Facebook",
                     iconRes = R.drawable.facebookicon,
-                    onClick = { /* gRPC FB Sign Up */ },
+                    onClick = { /* gRPC FB */ },
                     modifier = Modifier.weight(1f)
                 )
                 SocialLoginButton(
                     text = "Google",
                     iconRes = R.drawable.googleicon,
-                    onClick = { /* gRPC Google Sign Up */ },
+                    onClick = { /* gRPC Google */ },
                     modifier = Modifier.weight(1f)
                 )
             }
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            // Кнопка Create Account с переходом
+            // 7. Кнопка создания аккаунта
             GradientButton(
                 text = "Create Account",
-                onClick = {
-                    // В будущем здесь будет вызов gRPC Python Backend
-                    onSignUpSuccess() // Вызываем переход на LocationScreen
-                }
+                onClick = { onSignUpSuccess() }
             )
 
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
+            // 8. Ссылка на логин
             Text(
                 text = "Already Have An Account?",
                 color = startRed,
@@ -150,15 +158,11 @@ fun SignUpScreen(
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.clickable { onAlreadyHaveAccountClick() }
             )
-        }
 
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = 20.dp),
-            contentAlignment = Alignment.BottomCenter
-        ) {
+            // 9. Футер
+            Spacer(modifier = Modifier.height(40.dp))
             FooterText()
+            Spacer(modifier = Modifier.height(20.dp))
         }
     }
 }
@@ -176,20 +180,20 @@ fun AuthInputField(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .height(60.dp)
-            .shadow(elevation = 8.dp, shape = RoundedCornerShape(15.dp)),
+            .height(56.dp) // Чуть уменьшил высоту для компактности
+            .shadow(elevation = 4.dp, shape = RoundedCornerShape(15.dp)),
         color = Color.White,
         shape = RoundedCornerShape(15.dp)
     ) {
         TextField(
             value = value,
             onValueChange = onValueChange,
-            placeholder = { Text(text = placeholder, color = Color.LightGray) },
+            placeholder = { Text(text = placeholder, color = Color.LightGray, fontSize = 14.sp) },
             leadingIcon = {
                 Image(
                     painter = painterResource(id = leadingIcon),
                     contentDescription = null,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(20.dp)
                 )
             },
             trailingIcon = {
@@ -199,7 +203,7 @@ fun AuthInputField(
                             painter = painterResource(id = R.drawable.eyelogo),
                             contentDescription = null,
                             modifier = Modifier
-                                .size(24.dp)
+                                .size(20.dp)
                                 .alpha(if (passwordVisible) 1f else 0.5f)
                         )
                     }
@@ -212,6 +216,7 @@ fun AuthInputField(
                 unfocusedContainerColor = Color.White,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent
             ),
             singleLine = true,
             modifier = Modifier.fillMaxSize()

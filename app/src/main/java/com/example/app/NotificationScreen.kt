@@ -1,5 +1,6 @@
 package com.example.app
 
+import NotificationRow
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -92,40 +93,7 @@ fun NotificationScreen(
     }
 }
 
-@Composable
-fun NotificationRow(
-    iconRes: Int,
-    message: String,
-    iconColor: Color,
-    onClick: () -> Unit // ДОБАВИЛИ ПАРАМЕТР
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() } // ТЕПЕРЬ СТРОКА КЛИКАБЕЛЬНА
-            .padding(vertical = 4.dp)
-    ) {
-        // Иконка статуса
-        Icon(
-            painter = painterResource(id = iconRes),
-            contentDescription = null,
-            tint = iconColor,
-            modifier = Modifier.size(35.dp)
-        )
 
-        Spacer(modifier = Modifier.width(16.dp))
-
-        // Текст сообщения
-        Text(
-            text = message,
-            fontSize = 15.sp,
-            color = startRed,
-            fontFamily = YongFontFamily,
-            fontWeight = FontWeight.Medium
-        )
-    }
-}
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
