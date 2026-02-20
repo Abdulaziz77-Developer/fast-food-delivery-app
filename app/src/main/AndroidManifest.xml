@@ -13,10 +13,11 @@
         android:theme="@style/Theme.App"
         tools:targetApi="31">
         <activity
-            android:name=".Presentation.Screens.MainActivity"
+            android:name=".FoodApp"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.App">
+            android:theme="@style/Theme.App"
+            tools:ignore="Instantiatable">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
